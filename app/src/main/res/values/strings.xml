@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HarpJourneyApp</string>
+    <string name="add_button">Add</string>
+    <string name="home_button">Home</string>
+    <string name="login_button">Login</string>
+    <string name="ideas_menu_item">Ideas</string>
+    <string name="globe_menu_item">Globe</string>
+    <string name="rocket_menu_item">Rocket</string>
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+</resources>

@@ -4,8 +4,9 @@
     <string name="home_button">Home</string>
     <string name="login_button">Login</string>
     <string name="ideas_menu_item">Ideas</string>
-    <string name="globe_menu_item">Globe</string>
-    <string name="rocket_menu_item">Rocket</string>
     <string name="edit_button">Edit</string>
     <string name="delete_button">Delete</string>
+    <string name="student_profile">Student Profile</string>
+    <string name="mark_test">Mark Test</string>
+    <string name="view_lessons">View Lessons</string>
 </resources>

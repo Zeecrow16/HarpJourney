@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1001803368747",
+    "project_id": "aa-harpjourney",
+    "storage_bucket": "aa-harpjourney.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001803368747:android:e5fbe40c161b1989701d6e",
+        "android_client_info": {
+          "package_name": "com.example.harpjourneyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsk0GfGkbAtrN40mOqqmNyEt9Ik49QrPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

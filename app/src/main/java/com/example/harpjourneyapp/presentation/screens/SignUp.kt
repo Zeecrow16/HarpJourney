@@ -34,7 +34,6 @@ fun SignUp(
     val userService = FirebaseUserService()
     val userRepository = UserRepository(userService)
 
-    // Use the AuthViewModel with the AuthViewModelFactory
     val isRegistered by viewModel.isRegistered.observeAsState()
 
     Column(

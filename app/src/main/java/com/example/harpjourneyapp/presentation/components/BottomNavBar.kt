@@ -36,10 +36,9 @@ private fun createListOfItems(): List<NavScreen> {
 @Composable
 fun BottomNavBar(
     navController: NavController,
-    userRole: String, // "Student" or "Tutor"
+    userRole: String,
     modifier: Modifier = Modifier
 ) {
-    // Function to create the navigation items dynamically based on user role
     val items = when (userRole) {
         "Student" -> listOf(
             NavScreen.StudentHomeScreen,
@@ -53,7 +52,7 @@ fun BottomNavBar(
             NavScreen.ViewLessons,
             NavScreen.MarkTest
         )
-        else -> emptyList() // Fallback in case the role is unknown
+        else -> emptyList()
     }
 
     NavigationBar(

@@ -71,7 +71,7 @@ fun PractiseTheory(
                     if (showResults) {
                         val correct = question.correctAnswer == selectedAnswers[index]
                         Text(
-                            text = if (correct) "✅ Correct" else "❌ Correct Answer: ${question.correctAnswer}",
+                            text = if (correct) " Correct" else " Correct Answer: ${question.correctAnswer}",
                             color = if (correct) Color.Green else Color.Red,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -102,7 +102,6 @@ fun PractiseTheory(
                     confirmButton = {
                         TextButton(onClick = {
                             showDialog = false
-                            // Future: Send to tutor
                         }) {
                             Text("Submit to Tutor")
                         }

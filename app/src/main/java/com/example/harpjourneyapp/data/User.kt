@@ -4,6 +4,6 @@ import java.util.UUID
 
 data class User(
     val uid: UUID = UUID.randomUUID(),
-    val email: String = "",
-    val role: String = ""
+    val email: String,
+    val role: String
 )

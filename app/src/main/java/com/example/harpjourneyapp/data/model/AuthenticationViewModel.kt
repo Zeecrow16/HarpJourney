@@ -4,28 +4,35 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.harpjourneyapp.data.User
 import com.example.harpjourneyapp.data.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val repository: UserRepository) : ViewModel() {
-
-    private val _authenticated = MutableLiveData<Boolean>()
-    val authenticated: LiveData<Boolean> get() = _authenticated
-
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+class AuthenticationViewModel(private val repository: UserRepository) : ViewModel() {
+    private val _isRegistered = MutableLiveData<Boolean>()
+    val isRegistered: LiveData<Boolean> get() = _isRegistered
 
     fun signUp(email: String, password: String, role: String) {
         viewModelScope.launch {
             val result = repository.register(email, password, role)
-            if (result.isSuccess) {
-                _authenticated.postValue(true)
-                _errorMessage.postValue(null)
-            } else {
-                _authenticated.postValue(false)
-                _errorMessage.postValue(result.exceptionOrNull()?.localizedMessage ?: "Registration failed.")
-            }
+            _isRegistered.postValue(result.isSuccess)
         }
+    }
+
+    fun fetchUserRole(onRoleFetched: (String?) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let {
+            FirebaseFirestore.getInstance().collection("users")
+                .document(it.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val role = document.getString("role")
+                    onRoleFetched(role)
+                }
+                .addOnFailureListener {
+                    onRoleFetched(null)
+                }
+        } ?: onRoleFetched(null)
     }
 }

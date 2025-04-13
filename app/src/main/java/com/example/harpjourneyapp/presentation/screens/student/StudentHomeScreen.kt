@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.harpjourneyapp.presentation.components.BottomNavBar
 //import com.example.harpjourneyapp.presentation.components.BottomNavBar
 import com.example.harpjourneyapp.presentation.components.DatePickerModal
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
@@ -19,6 +20,7 @@ import java.util.*
 
 @Composable
 fun StudentHomeScreen(navController: NavHostController) {
+    val userRole = "Student"
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
     var formattedDate by remember { mutableStateOf<String?>(null) }
@@ -67,8 +69,7 @@ fun StudentHomeScreen(navController: NavHostController) {
             )
         }
 
-//        BottomNavBar(navController = navController, modifier = Modifier.align(Alignment.BottomCenter))
-    }
+        BottomNavBar(navController = navController, userRole = userRole)    }
 }
 
 @Preview(showBackground = true)

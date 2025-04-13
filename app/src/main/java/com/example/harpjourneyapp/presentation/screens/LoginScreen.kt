@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.harpjourneyapp.R
 //import com.example.harpjourneyapp.data.model.AuthState
-import com.example.harpjourneyapp.data.model.AuthViewModel
+import com.example.harpjourneyapp.data.model.AuthenticationViewModel
 import com.example.harpjourneyapp.navigation.NavScreen
 import com.example.harpjourneyapp.presentation.components.login.CustomLoginButton
 import com.example.harpjourneyapp.presentation.components.login.LoginFields
@@ -22,7 +22,7 @@ import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthenticationViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {

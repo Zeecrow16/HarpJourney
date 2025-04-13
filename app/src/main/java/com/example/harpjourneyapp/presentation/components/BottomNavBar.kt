@@ -34,7 +34,28 @@ private fun createListOfItems(): List<NavScreen> {
 }
 
 @Composable
-fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
+fun BottomNavBar(
+    navController: NavController,
+    userRole: String, // "Student" or "Tutor"
+    modifier: Modifier = Modifier
+) {
+    // Function to create the navigation items dynamically based on user role
+    val items = when (userRole) {
+        "Student" -> listOf(
+            NavScreen.StudentHomeScreen,
+            NavScreen.StudentProfile,
+            NavScreen.FindTutor,
+            NavScreen.PractiseTheory
+        )
+        "Tutor" -> listOf(
+            NavScreen.TutorHomeScreen,
+            NavScreen.TutorProfile,
+            NavScreen.ViewLessons,
+            NavScreen.MarkTest
+        )
+        else -> emptyList() // Fallback in case the role is unknown
+    }
+
     NavigationBar(
         modifier = modifier,
         containerColor = colorResource(id = R.color.purple_light),
@@ -43,7 +64,7 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        createListOfItems().forEach { item ->
+        items.forEach { item ->
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -66,3 +87,4 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
         }
     }
 }
+

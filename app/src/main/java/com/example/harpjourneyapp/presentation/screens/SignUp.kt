@@ -12,17 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.harpjourneyapp.data.model.AuthViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.harpjourneyapp.data.model.AuthViewModelFactory
+import com.example.harpjourneyapp.data.model.AuthenticationViewModel
+import com.example.harpjourneyapp.data.repository.UserRepository
+import com.example.harpjourneyapp.data.service.FirebaseUserService
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
-import com.example.harpjourneyapp.ui.theme.PurpleLight
 
 @Composable
 fun SignUp(
     navController: NavController,
-    viewModel: AuthViewModel
+    viewModel: AuthenticationViewModel
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -30,16 +31,11 @@ fun SignUp(
     var role by remember { mutableStateOf("Student") }
     val roles = listOf("Student", "Tutor")
 
-    val context = LocalContext.current
-    val authenticated by viewModel.authenticated.observeAsState()
-    val errorMessage by viewModel.errorMessage.observeAsState()
+    val userService = FirebaseUserService()
+    val userRepository = UserRepository(userService)
 
-    // Trigger navigation when sign-up is successful
-    LaunchedEffect(authenticated) {
-        if (authenticated == true) {
-            navController.navigate("profileCompletion")
-        }
-    }
+    // Use the AuthViewModel with the AuthViewModelFactory
+    val isRegistered by viewModel.isRegistered.observeAsState()
 
     Column(
         modifier = Modifier
@@ -89,26 +85,23 @@ fun SignUp(
             }
         }
 
-        Button(
-            onClick = {
-                if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
-                    if (password == confirmPassword) {
-                        viewModel.signUp(email, password, role)
-                    } else {
-                        Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = PurpleLight),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Button(onClick = {
+            viewModel.signUp(email, password, role)
+        }) {
             Text("Sign Up")
         }
+        if (isRegistered == true) {
+            LaunchedEffect(Unit) {
+                viewModel.fetchUserRole { role ->
+                    when (role) {
+                        "Student" -> navController.navigate("Student Home")
+                        "Tutor" -> navController.navigate("Tutor Home")
+                    }
+                }
+            }
 
-        errorMessage?.let {
-            Text(it, color = MaterialTheme.colorScheme.error)
+    } else if (isRegistered == false) {
+            Toast.makeText(LocalContext.current, "Registration failed!", Toast.LENGTH_SHORT).show()
         }
     }
 }

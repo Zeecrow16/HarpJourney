@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import com.example.harpjourneyapp.presentation.components.login.CustomLoginButto
 import com.example.harpjourneyapp.presentation.components.login.LoginFields
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
+
 @Composable
 fun LoginScreen(
     viewModel: AuthenticationViewModel,
@@ -29,16 +31,22 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-//    val authState by viewModel.authState.collectAsState()
-//
-//    // Navigate when login is successful
-//    LaunchedEffect(authState) {
-//        if (authState is AuthState.Success) {
-//            navController.navigate("home") {
-//                popUpTo("login") { inclusive = true }
-//            }
-//        }
-//    }
+    val loginResult by viewModel.loginResult.observeAsState()
+
+    LaunchedEffect(loginResult) {
+        loginResult?.onSuccess { role ->
+            when (role) {
+                "Tutor" -> navController.navigate(NavScreen.TutorHomeScreen.route) {
+                    popUpTo("login") { inclusive = true }
+                }
+                "Student" -> navController.navigate(NavScreen.StudentHomeScreen.route) {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+        }?.onFailure {
+            println("Login failed: ${it.message}")
+        }
+    }
 
     Column(
         modifier = modifier
@@ -67,8 +75,6 @@ fun LoginScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
-
         LoginFields(
             username = email,
             password = password,
@@ -79,29 +85,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-//        CustomLoginButton(
-//            text = "Login",
-//            onClick = {
-//                viewModel.login(email, password)
-//            },
-//            modifier = Modifier.align(Alignment.CenterHorizontally)
-//        )
-//
-//        when (authState) {
-//            is AuthState.Loading -> {
-//                Spacer(modifier = Modifier.height(16.dp))
-//                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-//            }
-//            is AuthState.Error -> {
-//                Spacer(modifier = Modifier.height(8.dp))
-//                Text(
-//                    text = (authState as AuthState.Error).message,
-//                    color = Color.Red,
-//                    modifier = Modifier.align(Alignment.CenterHorizontally)
-//                )
-//            }
-//            else -> {}
-//        }
+        CustomLoginButton(
+            text = "Login",
+            onClick = {
+                viewModel.login(email.trim(), password.trim())
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

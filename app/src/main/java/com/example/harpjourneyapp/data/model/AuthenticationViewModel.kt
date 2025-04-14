@@ -12,6 +12,10 @@ import kotlinx.coroutines.launch
 class AuthenticationViewModel(private val repository: UserRepository) : ViewModel() {
     private val _isRegistered = MutableLiveData<Boolean>()
     val isRegistered: LiveData<Boolean> get() = _isRegistered
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val _loginResult = MutableLiveData<Result<String>>()
+    val loginResult: LiveData<Result<String>> get() = _loginResult
 
     fun signUp(email: String, password: String, role: String) {
         viewModelScope.launch {
@@ -34,5 +38,29 @@ class AuthenticationViewModel(private val repository: UserRepository) : ViewMode
                     onRoleFetched(null)
                 }
         } ?: onRoleFetched(null)
+    }
+
+
+    fun login(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener { result ->
+                val userId = result.user?.uid ?: return@addOnSuccessListener
+                firestore.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        val role = doc.getString("role")
+                        if (role != null) {
+                            _loginResult.postValue(Result.success(role))
+                        } else {
+                            _loginResult.postValue(Result.failure(Exception("Role not found")))
+                        }
+                    }
+                    .addOnFailureListener {
+                        _loginResult.postValue(Result.failure(it))
+                    }
+            }
+            .addOnFailureListener {
+                _loginResult.postValue(Result.failure(it))
+            }
     }
 }

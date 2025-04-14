@@ -77,17 +77,21 @@ fun NavigationGraph(navController: NavHostController) {
             StudentProfileScreen(navController = navController)
         }
         composable(NavScreen.FindTutor.route){
-            FindTutor()
+            FindTutor(navController = navController)
         }
         composable("PractiseTheory/{skillLevel}") { backStackEntry ->
             val skillLevel = backStackEntry.arguments?.getString("skillLevel") ?: "Beginner"
             val skillLevelEnum = SkillLevel.valueOf(skillLevel)
-            PractiseTheory(skillLevel = skillLevelEnum)
+
+            PractiseTheory(
+                skillLevel = skillLevelEnum,
+                navController = navController
+            )
         }
 
         //Tutor Pages
         composable(NavScreen.TutorProfile.route){
-            TutorProfile()
+            TutorProfile(navController = navController)
         }
         composable(NavScreen.ViewLessons.route){
             ViewLessons()

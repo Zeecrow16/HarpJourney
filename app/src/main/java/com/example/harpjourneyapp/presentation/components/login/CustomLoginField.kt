@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -46,6 +47,7 @@ fun LoginFields(
         OutlinedTextField(
             value = password,
             onValueChange = onPasswordChange,
+            visualTransformation = PasswordVisualTransformation(),
             isError = passwordHasError,
             label = { Text("Password", color = Color.DarkGray) },
             modifier = Modifier.fillMaxWidth(),

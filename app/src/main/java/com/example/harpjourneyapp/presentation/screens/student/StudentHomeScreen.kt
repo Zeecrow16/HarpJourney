@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.harpjourneyapp.presentation.components.BottomNavBar
-//import com.example.harpjourneyapp.presentation.components.BottomNavBar
 import com.example.harpjourneyapp.presentation.components.DatePickerModal
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import java.text.SimpleDateFormat
@@ -31,25 +30,23 @@ fun StudentHomeScreen(navController: NavHostController) {
         formattedDate = format.format(date)
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BeigeBackground)
+            .background(BeigeBackground)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Student Homepage!", modifier = Modifier.padding(16.dp))
 
             Button(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                onClick = { showDatePicker = true }) {
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = { showDatePicker = true }
+            ) {
                 Text("Pick a Date")
             }
 
@@ -60,20 +57,23 @@ fun StudentHomeScreen(navController: NavHostController) {
             }
         }
 
-        if (showDatePicker) {
-            DatePickerModal(
-                onDateSelected = { dateMillis ->
-                    selectedDateMillis = dateMillis
-                },
-                onDismiss = { showDatePicker = false }
-            )
-        }
+        Spacer(modifier = Modifier.weight(1f))
 
-        BottomNavBar(navController = navController, userRole = userRole)    }
+        BottomNavBar(navController = navController, userRole = userRole)
+    }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = { dateMillis ->
+                selectedDateMillis = dateMillis
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
 }
-
 @Preview(showBackground = true)
 @Composable
-fun StudentHomeScreenPreview() {
-    StudentHomeScreen(navController = rememberNavController())
+fun StudentHomeScreen() {
+    val navController = rememberNavController()
+    StudentHomeScreen(navController = navController)
 }

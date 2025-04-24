@@ -1,4 +1,4 @@
-package com.example.harpjourneyapp.presentation.components
+package com.example.harpjourneyapp.presentation.components.profile
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme

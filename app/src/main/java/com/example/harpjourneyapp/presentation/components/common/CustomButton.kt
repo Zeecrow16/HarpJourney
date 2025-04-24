@@ -1,4 +1,4 @@
-package com.example.harpjourneyapp.presentation.components
+package com.example.harpjourneyapp.presentation.components.common
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

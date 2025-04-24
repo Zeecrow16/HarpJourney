@@ -79,15 +79,17 @@ fun NavigationGraph(navController: NavHostController) {
         composable(NavScreen.FindTutor.route){
             FindTutor(navController = navController)
         }
-        composable("PractiseTheory/{skillLevel}") { backStackEntry ->
-            val skillLevel = backStackEntry.arguments?.getString("skillLevel") ?: "Beginner"
-            val skillLevelEnum = SkillLevel.valueOf(skillLevel)
+        composable(NavScreen.PractiseTheory.route) { backStackEntry ->
+            val skillLevelArg = backStackEntry.arguments?.getString("skillLevel") ?: "Beginner"
+            val skillLevelEnum = try {
+                SkillLevel.valueOf(skillLevelArg)
+            } catch (e: IllegalArgumentException) {
+                SkillLevel.BEGINNER
+            }
 
-            PractiseTheory(
-                skillLevel = skillLevelEnum,
-                navController = navController
-            )
+            PractiseTheory(skillLevel = skillLevelEnum, navController = navController)
         }
+
 
         //Tutor Pages
         composable(NavScreen.TutorProfile.route){

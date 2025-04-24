@@ -11,7 +11,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.harpjourneyapp.presentation.components.BottomNavBar
+import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.components.CustomDropdownMenu
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController

@@ -7,14 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.harpjourneyapp.enum.SkillLevel
-import com.example.harpjourneyapp.presentation.components.BottomNavBar
+import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.screens.student.PractiseTheoryViewModel
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
@@ -30,19 +27,21 @@ fun PractiseTheory(
         viewModel.loadQuestions(skillLevel)
     }
 
-    val questions by viewModel.questions
+    val questions by viewModel.questions.collectAsState()
+
     val selectedAnswers = remember(questions) {
         mutableStateListOf<String?>().apply { repeat(questions.size) { add(null) } }
     }
+
+    val limitedQuestions = questions.take(3)
     var showResults by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BeigeBackground)
     ) {
-        if (questions.isEmpty()) {
+        if (limitedQuestions.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -54,7 +53,7 @@ fun PractiseTheory(
                     .align(Alignment.TopCenter),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                questions.forEachIndexed { index, question ->
+                limitedQuestions.forEachIndexed { index, question ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "${index + 1}. ${question.question}",
@@ -84,15 +83,6 @@ fun PractiseTheory(
                                 )
                             }
                         }
-
-                        if (showResults) {
-                            val correct = question.correctAnswer == selectedAnswers[index]
-                            Text(
-                                text = if (correct) " Correct" else " Correct Answer: ${question.correctAnswer}",
-                                color = if (correct) Color.Green else Color.Red,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
                     }
                 }
 
@@ -101,31 +91,28 @@ fun PractiseTheory(
                 Button(
                     onClick = {
                         showResults = true
-                        showDialog = true
                     },
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text("Submit Answers")
                 }
 
-                if (showDialog) {
+                if (showResults) {
                     AlertDialog(
-                        onDismissRequest = { showDialog = false },
+                        onDismissRequest = { showResults = false },
                         title = { Text("Your Results") },
                         text = {
-                            val score = questions.withIndex()
-                                .count { (i, q) -> q.correctAnswer == selectedAnswers[i] }
-                            Text("You got $score out of ${questions.size} correct.")
+                            Text("Your answers have been submitted!")
                         },
                         confirmButton = {
                             TextButton(onClick = {
-                                showDialog = false
+                                showResults = false
                             }) {
                                 Text("Submit to Tutor")
                             }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showDialog = false }) {
+                            TextButton(onClick = { showResults = false }) {
                                 Text("Cancel")
                             }
                         }
@@ -140,11 +127,4 @@ fun PractiseTheory(
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PractiseTheoryScreenPreview() {
-    val navController = rememberNavController()
-    PractiseTheory(skillLevel = SkillLevel.BEGINNER, navController = navController)
 }

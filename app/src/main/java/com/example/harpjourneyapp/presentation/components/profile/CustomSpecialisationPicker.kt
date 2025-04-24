@@ -1,4 +1,4 @@
-package com.example.harpjourneyapp.presentation.components
+package com.example.harpjourneyapp.presentation.components.profile
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

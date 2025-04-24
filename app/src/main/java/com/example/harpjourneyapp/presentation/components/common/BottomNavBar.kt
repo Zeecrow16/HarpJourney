@@ -1,4 +1,4 @@
-package com.example.harpjourneyapp.presentation.components
+package com.example.harpjourneyapp.presentation.components.common
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon

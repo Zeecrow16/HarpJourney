@@ -11,98 +11,53 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+
 class PractiseTheoryViewModel(
     private val questionsRepository: QuestionsRepository = QuestionsRepository(),
     private val studentProfileRepository: StudentProfileRepository = StudentProfileRepository()
 ) : ViewModel() {
 
-    private val _questions = MutableStateFlow<List<HarpQuestions>>(emptyList())
-    val questions: StateFlow<List<HarpQuestions>> get() = _questions
-
     private val _skillLevel = MutableStateFlow<SkillLevel>(SkillLevel.BEGINNER)
     val skillLevel: StateFlow<SkillLevel> get() = _skillLevel
 
-    private val _selectedAnswers = MutableStateFlow<List<String?>>(emptyList())
-    val selectedAnswers: StateFlow<List<String?>> get() = _selectedAnswers
+    private val _filteredQuestions = MutableStateFlow<List<HarpQuestions>>(emptyList())
+    val filteredQuestions: StateFlow<List<HarpQuestions>> get() = _filteredQuestions
 
-    private val _showResults = MutableStateFlow(false)
-    val showResults: StateFlow<Boolean> get() = _showResults
-
-    fun getUserSkillLevel(uid: String) {
+    fun fetchUserSkillLevel() {
         viewModelScope.launch {
             try {
-                // Log the initial UID value for debugging
-                Log.d("PractiseTheoryViewModel", "Fetching skill level for user with UID: $uid")
-
-                // Check if the UID is null or empty
+                val uid = studentProfileRepository.getCurrentUserUid()
                 if (uid.isNullOrEmpty()) {
-                    Log.e("PractiseTheoryViewModel", "Error: User UID is null or empty.")
-                    _skillLevel.value = SkillLevel.BEGINNER
-                    loadAllQuestions()
+                    Log.e("PractiseTheoryViewModel", "UID is null or empty.")
                     return@launch
                 }
 
-                // Retrieve the user skill level from the repository
-                val userSkillLevel = studentProfileRepository.getUserSkillLevel(uid)
+                val level = studentProfileRepository.getUserSkillLevel(uid)
+                _skillLevel.value = level
+                Log.d("PractiseTheoryViewModel", "User skill level: $level")
 
-                // Log the retrieved skill level
-                Log.d("PractiseTheoryViewModel", "Fetched user skill level: $userSkillLevel")
-
-                // Set the skill level in the ViewModel and load questions
-                _skillLevel.value = userSkillLevel
-                loadAllQuestions()
             } catch (e: Exception) {
-                // Log any exceptions that occur during the process
-                Log.e("PractiseTheoryViewModel", "Error fetching user skill level for UID: $uid", e)
-
-                // Set a default skill level if an error occurs
-                _skillLevel.value = SkillLevel.BEGINNER
-                loadAllQuestions()
+                Log.e("PractiseTheoryViewModel", "Failed to fetch skill level", e)
             }
         }
     }
 
-
-    private fun loadAllQuestions() {
+    fun fetchAllQuestionsAndSkillLevels() {
         viewModelScope.launch {
             try {
-                val allQuestions = questionsRepository.getAllQuestions()
-                _questions.value = allQuestions.take(3)
-                _selectedAnswers.value = List(allQuestions.size) { null }
-                matchSkillLevel()
-            } catch (e: Exception) {
-                _questions.value = emptyList()
-            }
-        }
-    }
+                val questions = questionsRepository.getAllQuestions()
 
-    private fun matchSkillLevel() {
-        viewModelScope.launch {
-            try {
-                val filteredQuestions = _questions.value.filter { question ->
+                val filteredQuestions = questions.filter { question ->
                     question.skill_level.equals(_skillLevel.value.name, ignoreCase = true)
                 }
 
-                _questions.value = filteredQuestions.take(3)
+                _filteredQuestions.value = filteredQuestions.shuffled().take(3)
+
+                Log.d("PractiseTheoryViewModel", "Fetched ${filteredQuestions.size} matching questions, showing 3 random ones.")
+
             } catch (e: Exception) {
-                _questions.value = emptyList()
+                Log.e("PractiseTheoryViewModel", "Error fetching questions", e)
             }
         }
-    }
-
-
-
-    fun submitAnswers() {
-        _showResults.value = true
-    }
-
-    fun cancelResults() {
-        _showResults.value = false
-    }
-
-    fun updateSelectedAnswer(index: Int, answer: String?) {
-        val updatedAnswers = _selectedAnswers.value.toMutableList()
-        updatedAnswers[index] = answer
-        _selectedAnswers.value = updatedAnswers
     }
 }

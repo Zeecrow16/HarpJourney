@@ -3,6 +3,7 @@ package com.example.harpjourneyapp.data.repository
 import android.util.Log
 import com.example.harpjourneyapp.data.StudentProfile
 import com.example.harpjourneyapp.enum.SkillLevel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -23,12 +24,15 @@ class StudentProfileRepository(private val firestore: FirebaseFirestore = Fireba
         return doc.toObject(StudentProfile::class.java)
     }
 
-    suspend fun getUserSkillLevel(uid: String) {
-        val doc = firestore.collection("users")
-            .document(uid)
-            .get()
-            .await()
+    suspend fun getUserSkillLevel(uid: String): SkillLevel {
+        val profile = getUserProfile(uid)
+            ?: throw IllegalStateException("User profile not found for UID: $uid")
 
-        val skillLevelString = doc.getString("skill_level")
+        return SkillLevel.valueOf(profile.skill_level.ifEmpty { "BEGINNER" })
+    }
 
-    }}
+    fun getCurrentUserUid(): String? {
+        return FirebaseAuth.getInstance().currentUser?.uid
+    }
+
+}

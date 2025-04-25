@@ -1,5 +1,6 @@
 package com.example.harpjourneyapp.presentation.screens.practice
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.toggleable
@@ -7,9 +8,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.screens.student.PractiseTheoryViewModel
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
@@ -20,32 +26,44 @@ fun PractiseTheory(
     viewModel: PractiseTheoryViewModel = viewModel(),
     navController: NavHostController
 ) {
-    LaunchedEffect(uid) {
-        viewModel.getUserSkillLevel(uid)
-    }
+    val questions by viewModel.filteredQuestions.collectAsState()
+    val selectedAnswers = remember { mutableStateListOf<String>() }
+    val pageTitle = AppTitles.titles.PractiseTheory
 
-    val questions by viewModel.questions.collectAsState()
-    val skillLevel by viewModel.skillLevel.collectAsState()
-    val selectedAnswers by viewModel.selectedAnswers.collectAsState()
-    val showResults by viewModel.showResults.collectAsState()
+
+    LaunchedEffect(uid) {
+        viewModel.fetchUserSkillLevel()
+        viewModel.fetchAllQuestionsAndSkillLevels()
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BeigeBackground)
     ) {
-        if (questions.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .align(Alignment.TopCenter),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        )
+        {
+            Text(
+                text = pageTitle,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .align(Alignment.TopCenter),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
+                    .padding(vertical = 24.dp)
+            )
+
+            if (questions.isEmpty()) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
                 questions.forEachIndexed { index, question ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
@@ -57,19 +75,18 @@ fun PractiseTheory(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .toggleable(
-                                        value = selectedAnswers[index] == option,
-                                        onValueChange = {
-                                            viewModel.updateSelectedAnswer(index, option)
-                                        }
-                                    )
                                     .padding(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                val isChecked = selectedAnswers.contains(option)
                                 Checkbox(
-                                    checked = selectedAnswers[index] == option,
+                                    checked = isChecked,
                                     onCheckedChange = {
-                                        viewModel.updateSelectedAnswer(index, option)
+                                        if (it) {
+                                            selectedAnswers.add(option)
+                                        } else {
+                                            selectedAnswers.remove(option)
+                                        }
                                     }
                                 )
                                 Text(
@@ -85,35 +102,13 @@ fun PractiseTheory(
 
                 Button(
                     onClick = {
-                        viewModel.submitAnswers()
+                        // TODO-Empty logic
                     },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
                 ) {
                     Text("Submit Answers")
-                }
-
-                if (showResults) {
-                    AlertDialog(
-                        onDismissRequest = { viewModel.cancelResults() },
-                        title = { Text("Your Results") },
-                        text = {
-                            Text("Your answers have been submitted!")
-                        },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                viewModel.cancelResults()
-                            }) {
-                                Text("Submit to Tutor")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = {
-                                viewModel.cancelResults()
-                            }) {
-                                Text("Cancel")
-                            }
-                        }
-                    )
                 }
             }
         }
@@ -121,9 +116,9 @@ fun PractiseTheory(
         BottomNavBar(
             navController = navController,
             userRole = "Student",
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
         )
     }
 }
-
-

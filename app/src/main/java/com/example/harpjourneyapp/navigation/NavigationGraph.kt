@@ -10,7 +10,6 @@ import com.example.harpjourneyapp.data.model.AuthViewModelFactory
 import com.example.harpjourneyapp.data.model.AuthenticationViewModel
 import com.example.harpjourneyapp.data.repository.UserRepository
 import com.example.harpjourneyapp.data.service.FirebaseUserService
-import com.example.harpjourneyapp.enum.SkillLevel
 import com.example.harpjourneyapp.presentation.screens.LoginScreen
 import com.example.harpjourneyapp.presentation.screens.SignUp
 import com.example.harpjourneyapp.presentation.screens.practice.PractiseTheory
@@ -23,7 +22,7 @@ import com.example.harpjourneyapp.presentation.screens.tutor.MarkTest
 import com.example.harpjourneyapp.presentation.screens.tutor.TutorProfile
 import com.example.harpjourneyapp.presentation.screens.tutor.ViewLessons
 
-sealed class NavScreen(var icon: Int, var route: String) {
+sealed class NavScreen(var icon: Int, open val route: String) {
     // Common routes
     data object Login : NavScreen(R.drawable.homebutton, "Login")
     data object SignUp : NavScreen(R.drawable.profile, "SignUp")
@@ -32,7 +31,7 @@ sealed class NavScreen(var icon: Int, var route: String) {
     data object StudentHomeScreen : NavScreen(R.drawable.homebutton, "Student Home")
     data object StudentProfile : NavScreen(R.drawable.profile, "Student Profile")
     data object FindTutor : NavScreen(R.drawable.findtutor, "FindTutor")
-    data object PractiseTheory : NavScreen(R.drawable.practiselesson, "Practise Theory")
+    data object PractiseTheory : NavScreen(R.drawable.practiselesson, "Practice Theory") // Simplified
 
     // Tutor Pages
     data object TutorHomeScreen : NavScreen(R.drawable.homebutton, "Tutor Home")
@@ -53,7 +52,7 @@ fun NavigationGraph(navController: NavHostController) {
         startDestination = NavScreen.Login.route
     ) {
 
-        //Sign Up / Sign In
+        // Sign In/Up
         composable(NavScreen.Login.route) {
             val viewModel: AuthenticationViewModel = viewModel(factory = AuthViewModelFactory(userRepository))
             LoginScreen(viewModel = viewModel, navController = navController)
@@ -64,7 +63,7 @@ fun NavigationGraph(navController: NavHostController) {
             SignUp(navController = navController, viewModel = viewModel)
         }
 
-        // Home Page
+        // Home Screens
         composable(NavScreen.StudentHomeScreen.route) {
             StudentHomeScreen(navController = navController)
         }
@@ -72,33 +71,28 @@ fun NavigationGraph(navController: NavHostController) {
             TutorHomeScreen(navController = navController)
         }
 
-        //Student Pages
-        composable(NavScreen.StudentProfile.route){
+        // Student Pages
+        composable(NavScreen.StudentProfile.route) {
             StudentProfileScreen(navController = navController)
         }
-        composable(NavScreen.FindTutor.route){
+        composable(NavScreen.FindTutor.route) {
             FindTutor(navController = navController)
         }
-        composable(NavScreen.PractiseTheory.route) { backStackEntry ->
-            val skillLevelArg = backStackEntry.arguments?.getString("skillLevel") ?: "Beginner"
-            val skillLevelEnum = try {
-                SkillLevel.valueOf(skillLevelArg)
-            } catch (e: IllegalArgumentException) {
-                SkillLevel.BEGINNER
-            }
 
-            PractiseTheory(skillLevel = skillLevelEnum, navController = navController)
+        composable(NavScreen.PractiseTheory.route) { backStackEntry ->
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+
+            PractiseTheory(uid = uid, navController = navController)
         }
 
-
-        //Tutor Pages
-        composable(NavScreen.TutorProfile.route){
+        // Tutor Pages
+        composable(NavScreen.TutorProfile.route) {
             TutorProfile(navController = navController)
         }
-        composable(NavScreen.ViewLessons.route){
+        composable(NavScreen.ViewLessons.route) {
             ViewLessons()
         }
-        composable(NavScreen.MarkTest.route){
+        composable(NavScreen.MarkTest.route) {
             MarkTest()
         }
     }

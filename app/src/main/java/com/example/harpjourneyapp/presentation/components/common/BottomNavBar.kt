@@ -16,24 +16,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavController
 import com.example.harpjourneyapp.R
+import com.example.harpjourneyapp.enum.SkillLevel
 import com.example.harpjourneyapp.navigation.NavScreen
 
-@Composable
-private fun createListOfItems(): List<NavScreen> {
-    return listOf(
-        //Student
-        NavScreen.StudentHomeScreen,
-        NavScreen.StudentProfile,
-        NavScreen.FindTutor,
-        NavScreen.PractiseTheory,
+//@Composable
+//private fun createListOfItems(skillLevel: SkillLevel): List<NavScreen> {
+//    return listOf(
+//        //Student
+//        NavScreen.StudentHomeScreen,
+//        NavScreen.StudentProfile,
+//        NavScreen.FindTutor,
+//        NavScreen.PractiseTheoryWithSkillLevel(skillLevel),
+//
+//        //Tutor
+//        NavScreen.TutorHomeScreen,
+//        NavScreen.TutorProfile,
+//        NavScreen.ViewLessons,
+//        NavScreen.MarkTest
+//    )
+//}
 
-        //Tutor
-        NavScreen.TutorHomeScreen,
-        NavScreen.TutorProfile,
-        NavScreen.ViewLessons,
-        NavScreen.MarkTest
-    )
-}
 
 @Composable
 fun BottomNavBar(
@@ -95,6 +97,6 @@ fun BottomNavBar(
             )
         }
     }
-
 }
+
 

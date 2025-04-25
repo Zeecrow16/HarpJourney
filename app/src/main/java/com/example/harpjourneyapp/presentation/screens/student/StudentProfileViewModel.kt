@@ -70,6 +70,7 @@ class StudentProfileViewModel(private val repository: StudentProfileRepository =
         _state.value = StudentProfileUiState.Loading
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
+            val uuid = currentUser.uid
             val profile = StudentProfile(
                 email = currentUser.email ?: "",
                 role = "Student",
@@ -80,7 +81,7 @@ class StudentProfileViewModel(private val repository: StudentProfileRepository =
             )
 
             try {
-                repository.saveUserProfile(profile)
+                repository.saveUserProfile(uuid, profile)
                 onSuccess()
                 _state.value = StudentProfileUiState.Success(profile)
             } catch (e: Exception) {

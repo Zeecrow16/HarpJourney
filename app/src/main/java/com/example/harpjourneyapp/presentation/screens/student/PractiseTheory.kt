@@ -10,38 +10,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.harpjourneyapp.enum.SkillLevel
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.screens.student.PractiseTheoryViewModel
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
 @Composable
 fun PractiseTheory(
-    skillLevel: SkillLevel,
+    uid: String,
     viewModel: PractiseTheoryViewModel = viewModel(),
     navController: NavHostController
 ) {
-    val userRole = "Student"
-
-    LaunchedEffect(skillLevel) {
-        viewModel.loadQuestions(skillLevel)
+    LaunchedEffect(uid) {
+        viewModel.getUserSkillLevel(uid)
     }
 
     val questions by viewModel.questions.collectAsState()
-
-    val selectedAnswers = remember(questions) {
-        mutableStateListOf<String?>().apply { repeat(questions.size) { add(null) } }
-    }
-
-    val limitedQuestions = questions.take(3)
-    var showResults by remember { mutableStateOf(false) }
+    val skillLevel by viewModel.skillLevel.collectAsState()
+    val selectedAnswers by viewModel.selectedAnswers.collectAsState()
+    val showResults by viewModel.showResults.collectAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BeigeBackground)
     ) {
-        if (limitedQuestions.isEmpty()) {
+        if (questions.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -53,7 +46,7 @@ fun PractiseTheory(
                     .align(Alignment.TopCenter),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                limitedQuestions.forEachIndexed { index, question ->
+                questions.forEachIndexed { index, question ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "${index + 1}. ${question.question}",
@@ -67,7 +60,7 @@ fun PractiseTheory(
                                     .toggleable(
                                         value = selectedAnswers[index] == option,
                                         onValueChange = {
-                                            selectedAnswers[index] = option
+                                            viewModel.updateSelectedAnswer(index, option)
                                         }
                                     )
                                     .padding(8.dp),
@@ -75,7 +68,9 @@ fun PractiseTheory(
                             ) {
                                 Checkbox(
                                     checked = selectedAnswers[index] == option,
-                                    onCheckedChange = { selectedAnswers[index] = option }
+                                    onCheckedChange = {
+                                        viewModel.updateSelectedAnswer(index, option)
+                                    }
                                 )
                                 Text(
                                     text = option.lowercase(),
@@ -90,7 +85,7 @@ fun PractiseTheory(
 
                 Button(
                     onClick = {
-                        showResults = true
+                        viewModel.submitAnswers()
                     },
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
@@ -99,20 +94,22 @@ fun PractiseTheory(
 
                 if (showResults) {
                     AlertDialog(
-                        onDismissRequest = { showResults = false },
+                        onDismissRequest = { viewModel.cancelResults() },
                         title = { Text("Your Results") },
                         text = {
                             Text("Your answers have been submitted!")
                         },
                         confirmButton = {
                             TextButton(onClick = {
-                                showResults = false
+                                viewModel.cancelResults()
                             }) {
                                 Text("Submit to Tutor")
                             }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showResults = false }) {
+                            TextButton(onClick = {
+                                viewModel.cancelResults()
+                            }) {
                                 Text("Cancel")
                             }
                         }
@@ -123,8 +120,10 @@ fun PractiseTheory(
 
         BottomNavBar(
             navController = navController,
-            userRole = userRole,
+            userRole = "Student",
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }
+
+

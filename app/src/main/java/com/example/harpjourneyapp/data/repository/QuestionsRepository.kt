@@ -6,9 +6,8 @@ import kotlinx.coroutines.tasks.await
 
 class QuestionsRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
-    suspend fun getQuestionsBySkillLevel(skillLevel: String): List<HarpQuestions> {
+    suspend fun getAllQuestions(): List<HarpQuestions> {
         val querySnapshot = firestore.collection("harp_questions")
-            .whereEqualTo("skill_level", skillLevel)
             .get()
             .await()
 
@@ -17,14 +16,12 @@ class QuestionsRepository(private val firestore: FirebaseFirestore = FirebaseFir
         }
     }
 
-    suspend fun getAllQuestions(): List<HarpQuestions> {
-        val querySnapshot = firestore.collection("harp_questions")
-            .get()  // No skill level filter here
+    suspend fun getQuestionSkillLevel(questionId: String): String? {
+        val doc = firestore.collection("harp_questions")
+            .document(questionId)
+            .get()
             .await()
-
-        return querySnapshot.documents.mapNotNull { doc ->
-            doc.toObject(HarpQuestions::class.java)
-        }
-
+        return doc.getString("skill_level")
     }
 }
+

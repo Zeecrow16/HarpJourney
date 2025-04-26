@@ -17,14 +17,5 @@ class QuestionsRepository(
         }
     }
 
-    suspend fun getSkillLevelsOfQuestions(): List<String> {
-        val querySnapshot = firestore.collection("harp_questions")
-            .get()
-            .await()
-
-        return querySnapshot.documents.mapNotNull { doc ->
-            doc.getString("skill_level")
-        }
-    }
 
 }

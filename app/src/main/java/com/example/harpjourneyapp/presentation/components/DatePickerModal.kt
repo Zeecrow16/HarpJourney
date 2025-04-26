@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
+    onDateSelected: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
@@ -20,10 +20,12 @@ fun DatePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+                datePickerState.selectedDateMillis?.let { selectedDateMillis ->
+                    onDateSelected(selectedDateMillis)
+                }
                 onDismiss()
             }) {
-                Text("OK")
+                Text("Add Date")
             }
         },
         dismissButton = {

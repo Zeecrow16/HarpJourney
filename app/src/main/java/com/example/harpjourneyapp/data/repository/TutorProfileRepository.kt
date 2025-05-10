@@ -1,5 +1,6 @@
 package com.example.harpjourneyapp.data.repository
 
+import android.util.Log
 import com.example.harpjourneyapp.data.StudentProfile
 import com.example.harpjourneyapp.data.TutorProfile
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,10 +16,54 @@ class TutorProfileRepository(private val firestore: FirebaseFirestore = Firebase
     }
 
     suspend fun getUserProfile(uid: String): TutorProfile? {
-        val doc = firestore.collection("users")
-            .document(uid)
+        return try {
+            val doc = firestore.collection("users").document(uid).get().await()
+            doc.toObject(TutorProfile::class.java)?.copy(tutorId = doc.id)
+        } catch (e: Exception) {
+            Log.e("TutorRepo", "Error getting user profile: ${e.localizedMessage}")
+            null
+        }
+    }
+
+    suspend fun getAllTutors(): List<TutorProfile> {
+        val querySnapshot = firestore.collection("users")
+            .whereEqualTo("role", "Tutor")
             .get()
             .await()
-        return doc.toObject(TutorProfile::class.java)
+
+        return querySnapshot.documents.mapNotNull { it.toObject(TutorProfile::class.java) }
     }
+
+
+    suspend fun getTutorIds(): List<String> {
+        return try {
+            val snapshot = firestore.collection("users")
+                .whereEqualTo("role", "Tutor")
+                .get()
+                .await()
+            snapshot.documents.map { it.id }
+        } catch (e: Exception) {
+            Log.e("TutorRepo", "Failed to get tutor IDs: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
+
+    suspend fun getTutorsAvailabilityByIds(): Map<String, List<Long>> {
+        val ids = getTutorIds()
+        val map = mutableMapOf<String, List<Long>>()
+
+        for (id in ids) {
+            val profile = getUserProfile(id)
+            if (profile?.availability != null) {
+                map[id] = profile.availability
+            }
+        }
+
+        return map
+    }
+
+    suspend fun getTutorsByIds(ids: List<String>): List<TutorProfile> {
+        return ids.mapNotNull { getUserProfile(it) }
+    }
+
 }

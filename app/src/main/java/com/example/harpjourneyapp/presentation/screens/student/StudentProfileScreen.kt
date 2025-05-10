@@ -119,7 +119,7 @@ fun StudentProfileScreen(
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = PurpleDark),
-                    modifier = Modifier.width(100.dp)
+                    modifier = Modifier.width(150.dp)
                 ) {
                     Text("Save Profile", fontSize = 16.sp, color = Color.White)
                 }

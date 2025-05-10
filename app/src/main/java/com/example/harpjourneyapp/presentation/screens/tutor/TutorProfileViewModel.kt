@@ -1,59 +1,112 @@
 package com.example.harpjourneyapp.presentation.screens.tutor
 
+import androidx.compose.runtime.getValue
+import android.text.format.DateFormat
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.harpjourneyapp.data.TutorProfile
+import com.example.harpjourneyapp.data.repository.TutorProfileRepository
 import com.example.harpjourneyapp.enum.HarpType
 import com.example.harpjourneyapp.enum.Specialisation
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.launch
 
-class TutorProfileViewModel : ViewModel() {
+class TutorProfileViewModel(
+    private val repository: TutorProfileRepository = TutorProfileRepository()
+) : ViewModel() {
 
-    private val _bio = MutableStateFlow("")
-    val bio: StateFlow<String> get() = _bio
-    private val _specialisation = MutableStateFlow<HarpType?>(null)
-    val specialisation: StateFlow<HarpType?> get() = _specialisation
-    val harpTypeOptions = HarpType.entries
-    private val _selectedSpecialisations = MutableStateFlow<List<Specialisation>>(emptyList())
-    val selectedSpecialisations: StateFlow<List<Specialisation>> get() = _selectedSpecialisations
-    private val _selectedDates = MutableStateFlow<List<Long>>(emptyList())
-    val selectedDates: StateFlow<List<Long>> get() = _selectedDates
+    var selectedTags by mutableStateOf<List<String>>(emptyList())
+    var selectedHarpType by mutableStateOf<String?>(null)
+    var selectedDates by mutableStateOf<List<Long>>(emptyList())
+    var bio by mutableStateOf("")
 
+    var tags = mutableStateOf<List<String>>(emptyList())
+    var harpTypes = mutableStateOf<List<String>>(emptyList())
 
-    fun onSpecialisationChange(newSpecialisation: HarpType) {
-        _specialisation.value = newSpecialisation
+    private val _state = MutableStateFlow<TutorProfileUiState>(TutorProfileUiState.Loading)
+    val state: StateFlow<TutorProfileUiState> get() = _state
+
+    init {
+        populateDropdowns()
     }
 
-
-    fun onBioChange(newBio: String) {
-        _bio.value = newBio
+    private fun populateDropdowns() {
+        tags.value = Specialisation.entries.map { it.name }
+        harpTypes.value = HarpType.entries.map { it.name }
     }
 
-    fun onSpecialisationsChange(newSpecialisations: List<Specialisation>) {
-        _selectedSpecialisations.value = newSpecialisations
-    }
-
-    val specialisationOptions = Specialisation.entries
-
-    fun addOrRemoveDate(dateMillis: Long) {
-        val current = _selectedDates.value.toMutableList()
-        if (current.contains(dateMillis)) {
-            current.remove(dateMillis)
+    fun loadUserProfile() {
+        _state.value = TutorProfileUiState.Loading
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            viewModelScope.launch {
+                try {
+                    val profile = repository.getUserProfile(currentUser.uid)
+                    if (profile != null) {
+                        bio = profile.bio
+                        selectedHarpType = profile.harpType
+                        selectedTags = profile.specialisations
+                        selectedDates = profile.availability
+                        _state.value = TutorProfileUiState.Success(profile)
+                    } else {
+                        _state.value = TutorProfileUiState.Error("Profile not found")
+                    }
+                } catch (e: Exception) {
+                    _state.value = TutorProfileUiState.Error("Error loading profile: ${e.message}")
+                }
+            }
         } else {
-            current.add(dateMillis)
+            _state.value = TutorProfileUiState.Error("No authenticated user")
         }
-        _selectedDates.value = current
     }
 
-    fun clearSelectedDates() {
-        _selectedDates.value = emptyList()
+    suspend fun saveUserProfile(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        _state.value = TutorProfileUiState.Loading
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val profile = TutorProfile(
+                tutorId = currentUser.uid,
+                email = currentUser.email ?: "",
+                role = "Tutor",
+                bio = bio,
+                harpType = selectedHarpType ?: "",
+                specialisations = selectedTags,
+                availability = selectedDates
+            )
+
+            try {
+                repository.saveUserProfile(currentUser.uid, profile)
+                onSuccess()
+                _state.value = TutorProfileUiState.Success(profile)
+            } catch (e: Exception) {
+                onError("Error saving profile: ${e.message}")
+                _state.value = TutorProfileUiState.Error("Error saving profile: ${e.message}")
+            }
+        } else {
+            onError("No authenticated user")
+            _state.value = TutorProfileUiState.Error("No authenticated user")
+        }
     }
+
+    fun toggleDate(selectedDate: Long) {
+        if (selectedDates.contains(selectedDate)) {
+            selectedDates = selectedDates.filter { it != selectedDate }
+        } else {
+            selectedDates = selectedDates + selectedDate
+        }
+    }
+
     fun formatMillisToReadableDate(millis: Long): String {
-        val sdf = SimpleDateFormat("DD MMM yyyy", Locale.getDefault())
-        return sdf.format(Date(millis))
+        return DateFormat.format("dd-MM-yyyy", millis).toString()
     }
+}
 
-
+sealed class TutorProfileUiState {
+    object Loading : TutorProfileUiState()
+    data class Success(val profile: TutorProfile) : TutorProfileUiState()
+    data class Error(val message: String) : TutorProfileUiState()
 }

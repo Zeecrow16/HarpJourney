@@ -73,8 +73,3 @@ fun TutorHomeScreen(navController: NavHostController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun TutorHomeScreenPreview() {
-    TutorHomeScreen(navController = rememberNavController())
-}

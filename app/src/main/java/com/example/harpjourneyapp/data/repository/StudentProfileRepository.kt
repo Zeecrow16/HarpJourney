@@ -2,6 +2,7 @@ package com.example.harpjourneyapp.data.repository
 
 import android.util.Log
 import com.example.harpjourneyapp.data.StudentProfile
+import com.example.harpjourneyapp.data.TutorProfile
 import com.example.harpjourneyapp.enum.SkillLevel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -34,5 +35,15 @@ class StudentProfileRepository(private val firestore: FirebaseFirestore = Fireba
     fun getCurrentUserUid(): String? {
         return FirebaseAuth.getInstance().currentUser?.uid
     }
+
+    suspend fun getAssignedTutorId(uid: String): String? {
+        val profile = getUserProfile(uid)
+            ?: throw IllegalStateException("User profile not found for UID: $uid")
+
+        return profile.tutorId
+    }
+
+
+
 
 }

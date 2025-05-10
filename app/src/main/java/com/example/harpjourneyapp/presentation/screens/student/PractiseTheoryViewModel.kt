@@ -23,6 +23,10 @@ class PractiseTheoryViewModel(
     private val _filteredQuestions = MutableStateFlow<List<HarpQuestions>>(emptyList())
     val filteredQuestions: StateFlow<List<HarpQuestions>> get() = _filteredQuestions
 
+    private val _hasTutor = MutableStateFlow<Boolean>(false)
+    val hasTutor: StateFlow<Boolean> get() = _hasTutor
+
+
     fun fetchUserSkillLevel() {
         viewModelScope.launch {
             try {
@@ -60,4 +64,22 @@ class PractiseTheoryViewModel(
             }
         }
     }
+
+    fun submitTestToTutor(selectedAnswers: List<String>) {
+        viewModelScope.launch {
+            try {
+                val uid = studentProfileRepository.getCurrentUserUid()
+                if (uid.isNullOrBlank()) {
+                    Log.e("PractiseTheoryViewModel", "Cannot submit: UID is null or blank")
+                    return@launch
+                }
+
+                questionsRepository.submitTestToTutor(uid, selectedAnswers)
+                Log.d("PractiseTheoryViewModel", "Test submitted successfully.")
+            } catch (e: Exception) {
+                Log.e("PractiseTheoryViewModel", "Failed to submit test.", e)
+            }
+        }
+    }
+
 }

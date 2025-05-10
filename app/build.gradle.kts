@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation (libs.material.v1100)
     implementation(libs.firebase.analytics)
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.material)
@@ -63,6 +64,7 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.places)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

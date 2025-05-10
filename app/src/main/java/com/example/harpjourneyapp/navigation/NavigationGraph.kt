@@ -31,7 +31,7 @@ sealed class NavScreen(var icon: Int, open val route: String) {
     data object StudentHomeScreen : NavScreen(R.drawable.homebutton, "Student Home")
     data object StudentProfile : NavScreen(R.drawable.profile, "Student Profile")
     data object FindTutor : NavScreen(R.drawable.findtutor, "FindTutor")
-    data object PractiseTheory : NavScreen(R.drawable.practiselesson, "Practice Theory") // Simplified
+    data object PractiseTheory : NavScreen(R.drawable.practiselesson, "Practice Theory")
 
     // Tutor Pages
     data object TutorHomeScreen : NavScreen(R.drawable.homebutton, "Tutor Home")
@@ -46,6 +46,7 @@ sealed class NavScreen(var icon: Int, open val route: String) {
 fun NavigationGraph(navController: NavHostController) {
     val userService = FirebaseUserService()
     val userRepository = UserRepository(userService)
+
 
     NavHost(
         navController = navController,
@@ -90,10 +91,12 @@ fun NavigationGraph(navController: NavHostController) {
             TutorProfile(navController = navController)
         }
         composable(NavScreen.ViewLessons.route) {
-            ViewLessons()
+            ViewLessons(navController = navController)
         }
-        composable(NavScreen.MarkTest.route) {
-            MarkTest()
+        composable(NavScreen.MarkTest.route) { backStackEntry ->
+            val uid = backStackEntry.arguments?.getString("uid") ?: ""
+            MarkTest(navController = navController)
         }
+
     }
 }

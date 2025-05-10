@@ -1,6 +1,8 @@
 package com.example.harpjourneyapp.data
 
 data class StudentProfile(
+    val studentId: String = "",
+    val tutorId: String = "",
     val email: String = "",
     val role: String = "",
     val bio: String = "",

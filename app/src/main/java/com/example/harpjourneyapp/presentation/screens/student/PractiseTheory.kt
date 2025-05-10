@@ -1,14 +1,13 @@
 package com.example.harpjourneyapp.presentation.screens.practice
 
-import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,7 +28,7 @@ fun PractiseTheory(
     val questions by viewModel.filteredQuestions.collectAsState()
     val selectedAnswers = remember { mutableStateListOf<String>() }
     val pageTitle = AppTitles.titles.PractiseTheory
-
+    val context = LocalContext.current
 
     LaunchedEffect(uid) {
         viewModel.fetchUserSkillLevel()
@@ -47,8 +46,7 @@ fun PractiseTheory(
                 .padding(16.dp)
                 .align(Alignment.TopCenter),
             verticalArrangement = Arrangement.spacedBy(20.dp)
-        )
-        {
+        ) {
             Text(
                 text = pageTitle,
                 fontSize = 28.sp,
@@ -102,7 +100,12 @@ fun PractiseTheory(
 
                 Button(
                     onClick = {
-                        // TODO-Empty logic
+                        if (selectedAnswers.isEmpty()) {
+                            Toast.makeText(context, "Please select answers before submitting.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.submitTestToTutor(selectedAnswers)
+                            Toast.makeText(context, "Answers submitted.", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -117,8 +120,8 @@ fun PractiseTheory(
             navController = navController,
             userRole = "Student",
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .align(Alignment.BottomCenter)
         )
     }
 }

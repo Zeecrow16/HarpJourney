@@ -4,5 +4,5 @@ enum class SkillLevel {
     BEGINNER,
     INTERMEDIATE,
     ADVANCED,
-    EXPERT
+    EXPERT;
 }

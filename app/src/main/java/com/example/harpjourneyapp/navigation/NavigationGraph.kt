@@ -12,6 +12,10 @@ import com.example.harpjourneyapp.data.repository.UserRepository
 import com.example.harpjourneyapp.data.service.FirebaseUserService
 import com.example.harpjourneyapp.presentation.screens.LoginScreen
 import com.example.harpjourneyapp.presentation.screens.SignUp
+import com.example.harpjourneyapp.presentation.screens.edit.StudentEditDetailsViewModel
+import com.example.harpjourneyapp.presentation.screens.edit.StudentEditProfile
+import com.example.harpjourneyapp.presentation.screens.edit.TutorEditDetailsViewModel
+import com.example.harpjourneyapp.presentation.screens.edit.TutorEditProfile
 import com.example.harpjourneyapp.presentation.screens.practice.PractiseTheory
 import com.example.harpjourneyapp.presentation.screens.student.FindTutor
 import com.example.harpjourneyapp.presentation.screens.tutor.TutorHomeScreen
@@ -32,12 +36,16 @@ sealed class NavScreen(var icon: Int, open val route: String) {
     data object StudentProfile : NavScreen(R.drawable.profile, "Student Profile")
     data object FindTutor : NavScreen(R.drawable.findtutor, "FindTutor")
     data object PractiseTheory : NavScreen(R.drawable.practiselesson, "Practice Theory")
+    data object StudentEditProfile : NavScreen(R.drawable.editbutton, "Student Edit Profile")
+
 
     // Tutor Pages
     data object TutorHomeScreen : NavScreen(R.drawable.homebutton, "Tutor Home")
     data object TutorProfile : NavScreen(R.drawable.profile, "Tutor Profile")
     data object ViewLessons : NavScreen(R.drawable.lessons, "View Lessons")
     data object MarkTest : NavScreen(R.drawable.testresults, "Mark Test")
+    data object TutorEditProfile : NavScreen(R.drawable.editbutton, "Tutor Edit Profile")
+
 
     data object Logout : NavScreen(R.drawable.logoutbutton, "Logout")
 }
@@ -46,6 +54,7 @@ sealed class NavScreen(var icon: Int, open val route: String) {
 fun NavigationGraph(navController: NavHostController) {
     val userService = FirebaseUserService()
     val userRepository = UserRepository(userService)
+
 
 
     NavHost(
@@ -62,6 +71,11 @@ fun NavigationGraph(navController: NavHostController) {
         composable(NavScreen.SignUp.route) {
             val viewModel: AuthenticationViewModel = viewModel(factory = AuthViewModelFactory(userRepository))
             SignUp(navController = navController, viewModel = viewModel)
+        }
+        //Logout
+        composable(NavScreen.Logout.route) {
+            val viewModel: AuthenticationViewModel = viewModel(factory = AuthViewModelFactory(userRepository))
+            LoginScreen(viewModel = viewModel, navController = navController)
         }
 
         // Home Screens
@@ -86,6 +100,15 @@ fun NavigationGraph(navController: NavHostController) {
             PractiseTheory(uid = uid, navController = navController)
         }
 
+        composable(NavScreen.StudentEditProfile.route) {
+            val vm: StudentEditDetailsViewModel = viewModel()
+            StudentEditProfile(
+                navController = navController,
+                viewModel = vm,
+                userRole = "Student"
+            )
+        }
+
         // Tutor Pages
         composable(NavScreen.TutorProfile.route) {
             TutorProfile(navController = navController)
@@ -96,6 +119,14 @@ fun NavigationGraph(navController: NavHostController) {
         composable(NavScreen.MarkTest.route) { backStackEntry ->
             val uid = backStackEntry.arguments?.getString("uid") ?: ""
             MarkTest(navController = navController)
+        }
+        composable(NavScreen.TutorEditProfile.route) {
+            val vm: TutorEditDetailsViewModel = viewModel()
+            TutorEditProfile(
+                navController = navController,
+                viewModel = vm,
+                userRole = "Tutor"
+            )
         }
 
     }

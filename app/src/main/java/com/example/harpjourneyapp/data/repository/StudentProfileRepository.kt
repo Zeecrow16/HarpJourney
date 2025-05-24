@@ -43,6 +43,22 @@ class StudentProfileRepository(private val firestore: FirebaseFirestore = Fireba
         return profile.tutorId
     }
 
+    suspend fun updatePersonalDetails(
+        uuid: String,
+        firstName: String,
+        surname: String
+    ) {
+        firestore.collection("users")
+            .document(uuid)
+            .update(
+                mapOf(
+                    "firstName" to firstName,
+                    "surname" to surname
+                )
+            )
+            .await()
+    }
+
 
 
 

@@ -8,10 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import androidx.navigation.NavHostController
+import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.DatePickerModal
 import com.example.harpjourneyapp.presentation.components.profile.CustomBio
 import com.example.harpjourneyapp.presentation.components.profile.CustomSelectPicker
@@ -28,6 +32,7 @@ fun TutorProfile(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showDatePicker by remember { mutableStateOf(false) }
+    val pageTitle = AppTitles.titles.TutorProfile
 
     val uiState by viewModel.state.collectAsState()
 
@@ -40,6 +45,18 @@ fun TutorProfile(
             .fillMaxSize()
             .background(BeigeBackground)
     ) {
+        // Title Text at the top
+        Text(
+            text = pageTitle,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+        )
+
+        // Main content below the title
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -79,7 +96,7 @@ fun TutorProfile(
                         onSelectionChange = { viewModel.selectedTags = it }
                     )
 
-                    // Date Picker
+                    // Date Picker button
                     Button(onClick = { showDatePicker = true }) {
                         Text("Pick Available Dates")
                     }

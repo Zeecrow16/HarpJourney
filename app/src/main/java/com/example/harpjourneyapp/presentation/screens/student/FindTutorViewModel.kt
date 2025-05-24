@@ -1,5 +1,6 @@
 package com.example.harpjourneyapp.presentation.screens.student
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.harpjourneyapp.data.TutorProfile
@@ -103,16 +104,17 @@ class FindTutorViewModel(private val repository: TutorProfileRepository = TutorP
 
 
     fun selectNewDate() {
-       // _selectedTutor.value = null
         _selectedDates.value = emptyList()
     }
 
-    fun requestLesson(tutor: TutorProfile, selectedDate: LocalDate, message: String? = null) {
+    fun requestLesson(tutor: TutorProfile, selectedDate: LocalDate?, message: String? = null) {
+        if (selectedDate == null) {
+            Log.e("FindTutorVM", "Attempted to request lesson with null date!")
+            return
+        }
         viewModelScope.launch {
-            // Get the current user's ID (the student)
             val studentId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-            // Send the lesson request to the database
             lessonRequestRepository.sendLessonRequest(studentId, tutor.tutorId, selectedDate, message)
         }
     }

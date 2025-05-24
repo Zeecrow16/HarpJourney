@@ -74,5 +74,82 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         }.await()
     }
 
+    suspend fun getLessonByStudentTutorDate(
+        studentId: String,
+        tutorId: String,
+        dateTimestamp: Long
+    ): List<LessonRequests> {
+        return try {
+            val snapshot = firestore.collection("lesson_requests")
+                .whereEqualTo("studentId", studentId)
+                .whereEqualTo("tutorId", tutorId)
+                .whereEqualTo("date", dateTimestamp)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(LessonRequests::class.java)?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to fetch lesson by student/tutor/date: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
+    suspend fun getUpcomingLessonsForStudent(studentId: String): List<LessonRequests> {
+        return try {
+            val snapshot = firestore.collection("lesson_requests")
+                .whereEqualTo("studentId", studentId)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(LessonRequests::class.java)?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to fetch upcoming lessons: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
+
+    suspend fun getUpcomingLessonsForTutor(tutorId: String): List<LessonRequests> {
+        return try {
+            val snapshot = firestore.collection("lesson_requests")
+                .whereEqualTo("tutorId", tutorId)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(LessonRequests::class.java)?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to fetch upcoming lessons for tutor: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
+
+    suspend fun getLessonByTutorStudentDate(
+        tutorId: String,
+        studentId: String,
+        dateTimestamp: Long
+    ): List<LessonRequests> {
+        return try {
+            val snapshot = firestore.collection("lesson_requests")
+                .whereEqualTo("tutorId", tutorId)
+                .whereEqualTo("studentId", studentId)
+                .whereEqualTo("date", dateTimestamp)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(LessonRequests::class.java)?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to fetch lesson by tutor/student/date: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
+
+
+
 
 }

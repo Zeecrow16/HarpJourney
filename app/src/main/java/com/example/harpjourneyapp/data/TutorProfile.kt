@@ -8,5 +8,9 @@ data class TutorProfile(
     val bio: String = "",
     val harpType: String = "",
     val specialisations: List<String> = emptyList(),
-    val availability: List<Long> = emptyList()
+    val availability: List<Long> = emptyList(),
+    val firstName: String = "",
+    val surname: String = "",
+    val location: String = "",
+    val phoneNumber: String = ""
 )

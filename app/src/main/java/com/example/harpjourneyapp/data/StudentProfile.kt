@@ -8,5 +8,9 @@ data class StudentProfile(
     val bio: String = "",
     val skill_level: String = "",
     val harpType: String = "",
-    val specialisations: List<String> = emptyList()
+    val specialisations: List<String> = emptyList(),
+    val firstName: String = "",
+    val surname: String = "",
+    val location: String = "",
+    val phoneNumber: String = ""
 )

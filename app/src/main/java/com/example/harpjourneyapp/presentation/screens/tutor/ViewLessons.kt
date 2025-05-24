@@ -39,6 +39,7 @@ fun ViewLessons(
 ) {
     val requests = viewModelInstance.requests
     val isLoading = viewModelInstance.isLoading
+    val pageTitle =  AppTitles.titles.ViewLessons
 
     Scaffold(
         bottomBar = {
@@ -52,17 +53,15 @@ fun ViewLessons(
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp)
         ) {
-            Text(
-                text = "View Lessons",
+            androidx.compose.material3.Text(
+                text = pageTitle,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = PurpleDark,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                textAlign = TextAlign.Center
+                    .padding(vertical = 24.dp)
             )
-
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()

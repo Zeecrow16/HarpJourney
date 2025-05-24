@@ -3,6 +3,7 @@ package com.example.harpjourneyapp.data.repository
 import android.util.Log
 import com.example.harpjourneyapp.data.StudentProfile
 import com.example.harpjourneyapp.data.TutorProfile
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -64,6 +65,26 @@ class TutorProfileRepository(private val firestore: FirebaseFirestore = Firebase
 
     suspend fun getTutorsByIds(ids: List<String>): List<TutorProfile> {
         return ids.mapNotNull { getUserProfile(it) }
+    }
+
+    suspend fun updatePersonalDetails(
+        uuid: String,
+        firstName: String,
+        surname: String
+    ) {
+        firestore.collection("users")
+            .document(uuid)
+            .update(
+                mapOf(
+                    "firstName" to firstName,
+                    "surname" to surname
+                )
+            )
+            .await()
+    }
+
+    fun getCurrentUserUid(): String? {
+        return FirebaseAuth.getInstance().currentUser?.uid
     }
 
 }

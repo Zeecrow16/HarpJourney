@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
@@ -45,13 +46,12 @@ fun MarkTest(
     navController: NavHostController
 ) {
     val submittedTests by viewModel.submittedTests.collectAsState()
+    val pageTitle = AppTitles.titles.MarkTests
 
-    // Fetch all the submitted tests when the Composable is first launched
     LaunchedEffect(Unit) {
         viewModel.fetchAllSubmittedTests()
     }
 
-    // Local context should be accessed only inside a Composable scope
     val context = LocalContext.current
 
     Box(
@@ -64,11 +64,14 @@ fun MarkTest(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Unmarked Test Submissions",
-                fontSize = 24.sp,
+            androidx.compose.material3.Text(
+                text = pageTitle,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 16.dp)
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp)
             )
 
             if (submittedTests.isEmpty()) {
@@ -84,12 +87,10 @@ fun MarkTest(
                             Text("Student: ${test.studentId}", fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
 
-                            // Marks list (using rememberSaveable to persist across recompositions)
                             val marks = rememberSaveable { mutableStateListOf<String>() }
 
-                            // Displaying the answers and marks for each question
                             test.answers.forEachIndexed { index, answer ->
-                                if (marks.size <= index) marks.add("") // Initialize marks list
+                                if (marks.size <= index) marks.add("")
 
                                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
                                     Text("Q${index + 1}: $answer")
@@ -104,7 +105,6 @@ fun MarkTest(
 
                             var feedback by remember { mutableStateOf("") }
 
-                            // Feedback section for the tutor
                             OutlinedTextField(
                                 value = feedback,
                                 onValueChange = { feedback = it },
@@ -114,10 +114,8 @@ fun MarkTest(
                                     .padding(vertical = 8.dp)
                             )
 
-                            // Submit button for marking the test
                             Button(
                                 onClick = {
-                                    // Make sure to call Toast in the composable context
                                     Toast.makeText(
                                         context,
                                         "Marked test for ${test.studentId}",

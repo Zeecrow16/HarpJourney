@@ -6,6 +6,7 @@ data class PageTitles (
     val SignUp: String = "Sign Up",
     val StudentHome: String = "Student Home",
     val TutorHome: String = "Tutor Home",
+    val EditProfile: String = "Edit Profile",
 
     //Student
     val PractiseTheory: String = "Practise Theory",

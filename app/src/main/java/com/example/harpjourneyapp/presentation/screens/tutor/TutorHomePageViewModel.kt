@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.harpjourneyapp.data.LessonRequests
 import com.example.harpjourneyapp.data.repository.LessonRequestRepository
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -51,4 +49,5 @@ class TutorHomePageViewModel(
             _logoutEvent.emit(Unit)
         }
     }
+
 }

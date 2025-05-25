@@ -106,8 +106,12 @@ fun FindTutor(navController: NavHostController, viewModel: FindTutorViewModel = 
                             tutor = tutor,
                             selectedDate = selectedDate,
                             onRequestLessonClick = { selectedTutor, date, message ->
-                                viewModel.requestLesson(selectedTutor, date, message)
-                                showToast.value = true
+                                viewModel.requestLesson(selectedTutor, date, message) { success, msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    if (success) {
+                                        navController.popBackStack()
+                                    }
+                                }
                             },
                             onSelectNewLessonClick = {
                                 viewModel.selectNewDate()

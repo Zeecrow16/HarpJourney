@@ -6,8 +6,10 @@ import com.example.harpjourneyapp.data.StudentProfile
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class LessonRequestRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
@@ -202,5 +204,33 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
             .document(lesson.id)
             .update("date", newDateMillis)
             .await()
+    }
+
+    //Only request one date/lesson
+    suspend fun hasLessonRequestOnDate(
+        studentId: String,
+        tutorId: String,
+        date: LocalDate
+    ): Boolean {
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val selectedDateStr = date.format(formatter)
+
+        val snapshot = firestore.collection("lesson_requests")
+            .whereEqualTo("studentId", studentId)
+            .whereEqualTo("tutorId", tutorId)
+            .get()
+            .await()
+
+        return snapshot.documents.any { doc ->
+            val timestampMillis = doc.getLong("date") ?: 0L
+            val requestDate = Instant.ofEpochMilli(timestampMillis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .format(formatter)
+
+            Log.d("LessonCheck", "Existing request date: $requestDate vs Selected date: $selectedDateStr")
+
+            requestDate == selectedDateStr
+        }
     }
 }

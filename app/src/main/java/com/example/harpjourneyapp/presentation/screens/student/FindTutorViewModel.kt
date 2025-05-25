@@ -107,16 +107,30 @@ class FindTutorViewModel(private val repository: TutorProfileRepository = TutorP
         _selectedDates.value = emptyList()
     }
 
-    fun requestLesson(tutor: TutorProfile, selectedDate: LocalDate?, message: String? = null) {
+    fun requestLesson(
+        tutor: TutorProfile,
+        selectedDate: LocalDate?,
+        message: String? = null,
+        onResult: (Boolean, String) -> Unit
+    ) {
         if (selectedDate == null) {
-            Log.e("FindTutorVM", "Attempted to request lesson with null date!")
+            onResult(false, "Please select a date.")
             return
         }
+
         viewModelScope.launch {
             val studentId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-            lessonRequestRepository.sendLessonRequest(studentId, tutor.tutorId, selectedDate, message)
+            val alreadyRequested = lessonRequestRepository.hasLessonRequestOnDate(studentId, tutor.tutorId, selectedDate)
+
+            if (alreadyRequested) {
+                onResult(false, "You've already requested a lesson with this tutor on this date.")
+            } else {
+                lessonRequestRepository.sendLessonRequest(studentId, tutor.tutorId, selectedDate, message)
+                onResult(true, "Lesson request sent successfully.")
+            }
         }
     }
+
 
 }

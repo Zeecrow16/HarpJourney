@@ -20,7 +20,7 @@ fun CustomBio(
 ) {
     Column(modifier = modifier.padding(16.dp)) {
         Text(
-            text = "Tell us a bit about yourself",
+            text = "Bio",
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -31,9 +31,9 @@ fun CustomBio(
             label = { Text("Your Bio") },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(100.dp),
             singleLine = false,
-            maxLines = 5
+            maxLines = 3
         )
     }
 }

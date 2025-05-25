@@ -71,10 +71,9 @@ fun StudentHomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            ViewUpcomingLessons(lessons = upcomingLessons)
+            ViewUpcomingLessons(lessons = upcomingLessons,
+                                onCancelLesson = { lesson -> viewModel.cancelLesson(lesson) },
+                                onRescheduleLesson = { lesson, newDateMillis -> viewModel.rescheduleLesson(lesson, newDateMillis) })
 
             Button(
                 onClick = { navController.navigate("Student Edit Profile") },

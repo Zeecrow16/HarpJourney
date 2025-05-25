@@ -9,7 +9,6 @@ import kotlinx.coroutines.tasks.await
 
 class TutorProfileRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
-
     suspend fun saveUserProfile(uuid: String, profile: TutorProfile) {
         firestore.collection("users")
             .document(uuid)

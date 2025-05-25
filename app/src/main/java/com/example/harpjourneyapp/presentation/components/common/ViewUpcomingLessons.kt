@@ -21,11 +21,17 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+import androidx.compose.runtime.*
+import com.example.harpjourneyapp.presentation.components.DatePickerModal
+
+import androidx.compose.runtime.*
 @Composable
 fun ViewUpcomingLessons(
     lessons: List<LessonRequests>,
     modifier: Modifier = Modifier,
-    onViewAllClick: (() -> Unit)? = null
+    onViewAllClick: (() -> Unit)? = null,
+    onCancelLesson: (LessonRequests) -> Unit,
+    onRescheduleLesson: (LessonRequests, Long) -> Unit
 ) {
     Column(
         modifier = modifier.padding(16.dp)
@@ -46,7 +52,10 @@ fun ViewUpcomingLessons(
             ) {
                 Text(
                     text = "No upcoming lessons, yet!",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Gray,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
                 )
             }
         } else {
@@ -62,7 +71,11 @@ fun ViewUpcomingLessons(
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        LessonCard(lesson = lesson)
+                        LessonCard(
+                            lesson = lesson,
+                            onCancel = onCancelLesson,
+                            onReschedule = onRescheduleLesson
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -83,11 +96,17 @@ fun ViewUpcomingLessons(
 }
 
 @Composable
-fun LessonCard(lesson: LessonRequests) {
+fun LessonCard(
+    lesson: LessonRequests,
+    onCancel: (LessonRequests) -> Unit,
+    onReschedule: (LessonRequests, Long) -> Unit
+) {
     val date = Instant.ofEpochMilli(lesson.date)
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
     val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -98,7 +117,126 @@ fun LessonCard(lesson: LessonRequests) {
             if (lesson.message.isNotBlank()) {
                 Text("Note: ${lesson.message}", style = MaterialTheme.typography.bodyMedium)
             }
-            Text("Status: ${lesson.status}", style = MaterialTheme.typography.bodySmall)
+
+            val statusColor = if (lesson.status == "Cancelled") Color.Red else MaterialTheme.colorScheme.onSurfaceVariant
+            val statusFontWeight = if (lesson.status == "Cancelled") FontWeight.Bold else FontWeight.Normal
+            Text(
+                "Status: ${lesson.status}",
+                style = MaterialTheme.typography.bodySmall.copy(color = statusColor, fontWeight = statusFontWeight)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { onCancel(lesson) },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Cancel")
+                }
+                Button(
+                    onClick = { showDatePicker = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Reschedule")
+                }
+            }
         }
     }
+
+    if (showDatePicker) {
+        DatePickerModal(
+            onDateSelected = { newDateMillis ->
+                onReschedule(lesson, newDateMillis)
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
 }
+
+
+
+//@Composable
+//fun ViewUpcomingLessons(
+//    lessons: List<LessonRequests>,
+//    modifier: Modifier = Modifier,
+//    onViewAllClick: (() -> Unit)? = null
+//) {
+//    Column(
+//        modifier = modifier.padding(16.dp)
+//    ) {
+//        Text(
+//            text = "Upcoming Lessons",
+//            textAlign = TextAlign.Center,
+//            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+//            modifier = Modifier.padding(bottom = 12.dp)
+//        )
+//
+//        if (lessons.isEmpty()) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(120.dp),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "No upcoming lessons, yet!",
+//                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray, fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)
+//                )
+//            }
+//        } else {
+//            LazyColumn(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .heightIn(max = 320.dp)
+//            ) {
+//                val lessonsToShow = if (lessons.size > 3) lessons.take(3) else lessons
+//                items(lessonsToShow) { lesson ->
+//                    AnimatedVisibility(
+//                        visible = true,
+//                        enter = fadeIn(),
+//                        exit = fadeOut()
+//                    ) {
+//                        LessonCard(lesson = lesson)
+//                    }
+//                    Spacer(modifier = Modifier.height(8.dp))
+//                }
+//            }
+//
+//            if (lessons.size > 3 && onViewAllClick != null) {
+//                Spacer(modifier = Modifier.height(12.dp))
+//                Button(
+//                    onClick = onViewAllClick,
+//                    modifier = Modifier.align(Alignment.CenterHorizontally),
+//                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+//                ) {
+//                    Text(text = "View All")
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun LessonCard(lesson: LessonRequests) {
+//    val date = Instant.ofEpochMilli(lesson.date)
+//        .atZone(ZoneId.systemDefault())
+//        .toLocalDate()
+//    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+//
+//    Card(
+//        modifier = Modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+//    ) {
+//        Column(modifier = Modifier.padding(16.dp)) {
+//            Text("Date: ${formatter.format(date)}", style = MaterialTheme.typography.titleMedium)
+//            if (lesson.message.isNotBlank()) {
+//                Text("Note: ${lesson.message}", style = MaterialTheme.typography.bodyMedium)
+//            }
+//            Text("Status: ${lesson.status}", style = MaterialTheme.typography.bodySmall)
+//        }
+//    }
+//}

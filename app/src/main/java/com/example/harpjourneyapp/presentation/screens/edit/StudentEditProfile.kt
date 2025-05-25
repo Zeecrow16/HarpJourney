@@ -1,26 +1,12 @@
 package com.example.harpjourneyapp.presentation.screens.edit
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,6 +18,7 @@ import com.example.harpjourneyapp.presentation.screens.Interfaces.EditDetailsInt
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import com.example.harpjourneyapp.ui.theme.PurpleLight
 import com.example.harpjourneyapp.ui.theme.PurplePrimary
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun StudentEditProfile(
@@ -41,6 +28,7 @@ fun StudentEditProfile(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pageTitle = AppTitles.titles.EditProfile
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -52,7 +40,7 @@ fun StudentEditProfile(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 Text(
                     text = pageTitle,
@@ -72,6 +60,14 @@ fun StudentEditProfile(
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                if (uiState.firstNameError != null) {
+                    Text(
+                        text = uiState.firstNameError ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -82,6 +78,14 @@ fun StudentEditProfile(
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                if (uiState.surnameError != null) {
+                    Text(
+                        text = uiState.surnameError ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -92,6 +96,14 @@ fun StudentEditProfile(
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                if (uiState.locationError != null) {
+                    Text(
+                        text = uiState.locationError ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -102,15 +114,28 @@ fun StudentEditProfile(
                     singleLine = true,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                if (uiState.phoneNumberError != null) {
+                    Text(
+                        text = uiState.phoneNumberError ?: "",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { viewModel.saveProfile { navController.popBackStack() } },
+                        onClick = {
+                            viewModel.saveProfile {
+                                Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(backgroundColor = PurplePrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.width(120.dp)

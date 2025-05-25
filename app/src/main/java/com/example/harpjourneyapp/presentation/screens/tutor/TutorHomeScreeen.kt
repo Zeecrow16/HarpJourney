@@ -71,16 +71,15 @@ fun TutorHomeScreen(
                     .fillMaxWidth()
                     .padding(vertical = 24.dp)
             )
+            ViewUpcomingLessons(lessons = upcomingRequests,
+                                onCancelLesson = { lesson -> viewModel.cancelLesson(lesson) },
+                                onRescheduleLesson = { lesson, newDateMillis -> viewModel.rescheduleLesson(lesson, newDateMillis) })
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ViewUpcomingLessons(lessons = upcomingRequests)
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             ViewStudents(students = students)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = { navController.navigate("Tutor Edit Profile") },
@@ -90,7 +89,7 @@ fun TutorHomeScreen(
                 Text("Update Details", color = Color.White, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             IconButton(
                 onClick = { viewModel.logout() },

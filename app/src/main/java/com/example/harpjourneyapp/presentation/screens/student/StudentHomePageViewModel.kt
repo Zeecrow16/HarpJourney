@@ -40,6 +40,21 @@ class StudentHomePageViewModel(
             _upcomingLessons.value = lessons
         }
     }
+
+    fun cancelLesson(lesson: LessonRequests) {
+        viewModelScope.launch {
+            lessonRequestRepository.cancelLesson(lesson)
+            loadUpcomingLessons()
+        }
+    }
+
+    fun rescheduleLesson(lesson: LessonRequests, newDateMillis: Long) {
+        viewModelScope.launch {
+            lessonRequestRepository.rescheduleLesson(lesson, newDateMillis)
+            loadUpcomingLessons()
+        }
+    }
+
     private val _logoutEvent = MutableSharedFlow<Unit>()
     val logoutEvent: SharedFlow<Unit> = _logoutEvent
 

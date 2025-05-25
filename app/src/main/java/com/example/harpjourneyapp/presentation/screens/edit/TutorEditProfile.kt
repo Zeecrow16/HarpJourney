@@ -1,5 +1,11 @@
 package com.example.harpjourneyapp.presentation.screens.edit
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,15 +19,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.screens.Interfaces.EditDetailsInterface
@@ -37,6 +41,7 @@ fun TutorEditProfile(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pageTitle = AppTitles.titles.EditProfile
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -66,8 +71,18 @@ fun TutorEditProfile(
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    isError = uiState.firstNameError != null,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                val firstNameError = uiState.firstNameError
+                if (firstNameError != null) {
+                    Text(
+                        text = firstNameError,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -76,9 +91,20 @@ fun TutorEditProfile(
                     label = { Text("Surname") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    isError = uiState.surnameError != null,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                val surNameError = uiState.surnameError
+                if (surNameError != null) {
+                    Text(
+                        text = surNameError,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
 
                 OutlinedTextField(
                     value = uiState.location,
@@ -86,8 +112,19 @@ fun TutorEditProfile(
                     label = { Text("Location") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    isError = uiState.locationError != null,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
+                val locationError = uiState.locationError
+                if (locationError != null) {
+                    Text(
+                        text = locationError,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -96,17 +133,31 @@ fun TutorEditProfile(
                     label = { Text("Phone Number") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    isError = uiState.phoneNumberError != null,
                     colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = PurpleLight)
                 )
-
+                val phoneNumberError = uiState.phoneNumberError
+                if (phoneNumberError != null) {
+                    Text(
+                        text = phoneNumberError,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { viewModel.saveProfile { navController.popBackStack() } },
+                        onClick = {
+                            viewModel.saveProfile {
+                                Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(backgroundColor = PurplePrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.width(120.dp)

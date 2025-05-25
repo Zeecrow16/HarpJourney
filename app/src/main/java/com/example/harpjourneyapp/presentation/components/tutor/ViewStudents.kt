@@ -30,9 +30,8 @@ fun ViewStudents(students: List<Student>) {
     ) {
         Text(
             text = "My Students",
-            fontSize = 24.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = PurplePrimary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp),
@@ -66,7 +65,7 @@ fun ViewStudents(students: List<Student>) {
                     ) {
                         Text(
                             text = student.name,
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = PurplePrimary
                         )

@@ -3,7 +3,6 @@ package com.example.harpjourneyapp.presentation.screens.tutor
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.harpjourneyapp.data.LessonDisplay
 import com.example.harpjourneyapp.data.LessonRequests
 import com.example.harpjourneyapp.data.StudentProfile
 import com.example.harpjourneyapp.data.repository.LessonRequestRepository
@@ -62,6 +61,19 @@ class TutorHomePageViewModel(
             }
 
             _myStudents.value = students
+        }
+    }
+    fun cancelLesson(lesson: LessonRequests) {
+        viewModelScope.launch {
+            lessonRequestRepository.cancelLesson(lesson)
+            loadUpcomingRequests()
+        }
+    }
+
+    fun rescheduleLesson(lesson: LessonRequests, newDateMillis: Long) {
+        viewModelScope.launch {
+            lessonRequestRepository.rescheduleLesson(lesson, newDateMillis)
+            loadUpcomingRequests()
         }
     }
 

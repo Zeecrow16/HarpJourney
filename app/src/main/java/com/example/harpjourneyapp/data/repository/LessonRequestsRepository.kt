@@ -187,4 +187,20 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
             emptyList()
         }
     }
+
+    //Cancel lesson
+    suspend fun cancelLesson(lesson: LessonRequests) {
+        firestore.collection("lesson_requests")
+            .document(lesson.id)
+            .update("status", "Cancelled")
+            .await()
+    }
+
+    //Reschedule lesson
+    suspend fun rescheduleLesson(lesson: LessonRequests, newDateMillis: Long) {
+        firestore.collection("lesson_requests")
+            .document(lesson.id)
+            .update("date", newDateMillis)
+            .await()
+    }
 }

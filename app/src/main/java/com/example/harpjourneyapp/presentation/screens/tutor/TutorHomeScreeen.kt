@@ -26,6 +26,7 @@ import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.navigation.NavScreen
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.components.common.ViewUpcomingLessons
+import com.example.harpjourneyapp.presentation.components.tutor.ViewStudents
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import com.example.harpjourneyapp.ui.theme.PurplePrimary
 
@@ -37,9 +38,11 @@ fun TutorHomeScreen(
     val userRole = "Tutor"
     val upcomingRequests by viewModel.upcomingRequests.collectAsState()
     val pageTitle = AppTitles.titles.TutorHome
+    val students by viewModel.myStudents.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadUpcomingRequests()
+        viewModel.loadMyStudents()
         viewModel.logoutEvent.collect {
             navController.navigate(NavScreen.Login.route) {
                 popUpTo(0) { inclusive = true }
@@ -47,7 +50,7 @@ fun TutorHomeScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BeigeBackground)
@@ -55,7 +58,8 @@ fun TutorHomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .padding(bottom = 56.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -74,6 +78,10 @@ fun TutorHomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            ViewStudents(students = students)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = { navController.navigate("Tutor Edit Profile") },
                 colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
@@ -81,23 +89,29 @@ fun TutorHomeScreen(
             ) {
                 Text("Update Details", color = Color.White, fontWeight = FontWeight.Bold)
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            IconButton(
+                onClick = { viewModel.logout() },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.logoutbutton),
+                    contentDescription = "Logout"
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = { viewModel.logout() },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.logoutbutton),
-                contentDescription = "Logout"
-            )
-        }
-
-        BottomNavBar(navController = navController, userRole = userRole)
+        BottomNavBar(
+            navController = navController,
+            userRole = userRole,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

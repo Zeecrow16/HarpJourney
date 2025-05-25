@@ -49,10 +49,9 @@ fun StudentEditProfile(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Content takes all space above navbar
             Column(
                 modifier = Modifier
-                    .weight(1f)  // Take all available space except BottomNavBar height
+                    .weight(1f)
                     .padding(horizontal = 24.dp, vertical = 16.dp),
             ) {
                 Text(

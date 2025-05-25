@@ -18,11 +18,16 @@ class StudentProfileRepository(private val firestore: FirebaseFirestore = Fireba
     }
 
     suspend fun getUserProfile(uid: String): StudentProfile? {
-        val doc = firestore.collection("users")
-            .document(uid)
-            .get()
-            .await()
-        return doc.toObject(StudentProfile::class.java)
+        return try {
+            val doc = firestore.collection("users")
+                .document(uid)
+                .get()
+                .await()
+            doc.toObject(StudentProfile::class.java)
+        } catch (e: Exception) {
+            Log.e("StudentProfileRepository", "Error fetching profile", e)
+            null
+        }
     }
 
     suspend fun getUserSkillLevel(uid: String): SkillLevel {
@@ -58,8 +63,5 @@ class StudentProfileRepository(private val firestore: FirebaseFirestore = Fireba
             )
             .await()
     }
-
-
-
 
 }

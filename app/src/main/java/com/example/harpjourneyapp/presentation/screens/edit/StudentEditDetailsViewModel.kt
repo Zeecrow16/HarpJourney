@@ -21,7 +21,7 @@ class StudentEditDetailsViewModel(
     init {
         viewModelScope.launch {
             val uid = repo.getCurrentUserUid() ?: return@launch
-            val p = repo.getUserProfile(uid) ?: return@launch
+            val p = repo.getUserProfile(uid) ?: StudentProfile(studentId = uid)
             _uiState.value = EditProfileDetails(
                 firstName = p.firstName,
                 surname = p.surname,

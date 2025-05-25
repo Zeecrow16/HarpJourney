@@ -2,6 +2,7 @@ package com.example.harpjourneyapp.data.repository
 
 import android.util.Log
 import com.example.harpjourneyapp.data.LessonRequests
+import com.example.harpjourneyapp.data.StudentProfile
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -10,6 +11,7 @@ import java.time.ZoneId
 
 class LessonRequestRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
+    //Send a lesson request to a tutor
     suspend fun sendLessonRequest(
         studentId: String,
         tutorId: String,
@@ -34,6 +36,8 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
             Log.e("LessonRequest", "Failed to send lesson request: ${e.localizedMessage}")
         }
     }
+
+    //Tutor gets pending lesson requests
     suspend fun getPendingRequestsForTutor(tutorId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -51,6 +55,7 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         }
     }
 
+    //Tutor accepts lesson, update the status and assign student to tutor
     suspend fun updateLessonStatusAndAssignUsers(
         requestId: String,
         newStatus: String
@@ -74,6 +79,7 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         }.await()
     }
 
+    //Get the lesson date, student and tutor
     suspend fun getLessonByStudentTutorDate(
         studentId: String,
         tutorId: String,
@@ -95,6 +101,8 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
             emptyList()
         }
     }
+
+    //Get lessons for student
     suspend fun getUpcomingLessonsForStudent(studentId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -111,6 +119,7 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         }
     }
 
+    //Get lessons for tutor
     suspend fun getUpcomingLessonsForTutor(tutorId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -124,6 +133,21 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         } catch (e: Exception) {
             Log.e("LessonRequestRepo", "Failed to fetch upcoming lessons for tutor: ${e.localizedMessage}")
             emptyList()
+        }
+    }
+
+    //Get student for tutor by id
+    suspend fun getStudentProfileById(studentId: String): StudentProfile? {
+        return try {
+            val doc = firestore.collection("users")
+                .document(studentId)
+                .get()
+                .await()
+
+            doc.toObject(StudentProfile::class.java)
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to fetch student profile: ${e.localizedMessage}")
+            null
         }
     }
 
@@ -149,7 +173,18 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
         }
     }
 
+    suspend fun getAcceptedStudentIdsForTutor(tutorId: String): List<String> {
+        return try {
+            val snapshot = firestore.collection("lesson_requests")
+                .whereEqualTo("tutorId", tutorId)
+                .whereEqualTo("status", "Accepted")
+                .get()
+                .await()
 
-
-
+            snapshot.documents.mapNotNull { it.getString("studentId") }.distinct()
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to get accepted student IDs: ${e.localizedMessage}")
+            emptyList()
+        }
+    }
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.tasks.await
 
 class TutorProfileRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
+
     suspend fun saveUserProfile(uuid: String, profile: TutorProfile) {
         firestore.collection("users")
             .document(uuid)
@@ -86,5 +87,16 @@ class TutorProfileRepository(private val firestore: FirebaseFirestore = Firebase
     fun getCurrentUserUid(): String? {
         return FirebaseAuth.getInstance().currentUser?.uid
     }
+
+    suspend fun getStudentsFromTutorProfile(tutorId: String): List<StudentProfile> {
+        val tutor = getUserProfile(tutorId) ?: return emptyList()
+        return tutor.studentIds.mapNotNull { studentId ->
+            val doc = firestore.collection("users").document(studentId).get().await()
+            doc.toObject(StudentProfile::class.java)?.copy(studentId = studentId)
+        }
+    }
+
+
+
 
 }

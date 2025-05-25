@@ -1,9 +1,14 @@
 package com.example.harpjourneyapp.presentation.screens.tutor
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.harpjourneyapp.data.LessonDisplay
 import com.example.harpjourneyapp.data.LessonRequests
+import com.example.harpjourneyapp.data.StudentProfile
 import com.example.harpjourneyapp.data.repository.LessonRequestRepository
+import com.example.harpjourneyapp.data.repository.TutorProfileRepository
+import com.example.harpjourneyapp.presentation.components.tutor.Student
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +19,9 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 
+
 class TutorHomePageViewModel(
-    private val lessonRequestRepository: LessonRequestRepository = LessonRequestRepository()
+    private val lessonRequestRepository: LessonRequestRepository = LessonRequestRepository(),
 ) : ViewModel() {
 
     private val _upcomingRequests = MutableStateFlow<List<LessonRequests>>(emptyList())
@@ -37,6 +43,25 @@ class TutorHomePageViewModel(
             val timestamp = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val requests = lessonRequestRepository.getLessonByTutorStudentDate(tutorId, studentId, timestamp)
             _upcomingRequests.value = requests
+        }
+    }
+
+    private val _myStudents = MutableStateFlow<List<Student>>(emptyList())
+    val myStudents: StateFlow<List<Student>> = _myStudents
+
+    fun loadMyStudents() {
+        val tutorId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            val studentIds = lessonRequestRepository.getAcceptedStudentIdsForTutor(tutorId)
+
+            val students = studentIds.mapNotNull { studentId ->
+                lessonRequestRepository.getStudentProfileById(studentId)
+            }.map {
+                Student(id = it.studentId, name = "${it.firstName} ${it.surname}")
+            }
+
+            _myStudents.value = students
         }
     }
 

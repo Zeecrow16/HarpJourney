@@ -19,16 +19,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
-import com.example.harpjourneyapp.presentation.components.DatePickerModal
 import com.example.harpjourneyapp.presentation.components.common.ViewUpcomingLessons
-//import com.example.harpjourneyapp.presentation.screens.tutor.TutorHomePageViewModel
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.harpjourneyapp.R
 import com.example.harpjourneyapp.data.titles.AppTitles
-import com.example.harpjourneyapp.presentation.components.common.CustomButton
+import com.example.harpjourneyapp.navigation.NavScreen
 import com.example.harpjourneyapp.ui.theme.PurplePrimary
 
 
@@ -43,6 +40,11 @@ fun StudentHomeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadUpcomingLessons()
+        viewModel.logoutEvent.collect {
+            navController.navigate(NavScreen.Login.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
     }
 
 

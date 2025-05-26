@@ -40,17 +40,15 @@ fun CustomFindTutorCard(
                 .background(Color.White, RoundedCornerShape(20.dp)),
             horizontalAlignment = Alignment.Start
         ) {
-            // Display Tutor's Email
             Text(
                 text = tutor.email,
                 style = MaterialTheme.typography.h6.copy(
-                    color = Color(0xFF8A2BE2),  // Purple color
+                    color = Color(0xFF8A2BE2),
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Display Tutor's Bio
             Text(
                 text = tutor.bio,
                 style = MaterialTheme.typography.body2.copy(
@@ -60,7 +58,6 @@ fun CustomFindTutorCard(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Display Tutor's Harp Type and Specialisations
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,7 +81,6 @@ fun CustomFindTutorCard(
                 )
             }
 
-            // Show Tutor's Availability
             if (tutor.availability.isNotEmpty()) {
                 Text(
                     text = "Available on:",
@@ -95,7 +91,6 @@ fun CustomFindTutorCard(
                     modifier = Modifier.padding(top = 16.dp)
                 )
 
-                // Format and display each available date
                 Column(modifier = Modifier.padding(top = 8.dp)) {
                     tutor.availability.forEach { timestamp ->
                         val date = Date(timestamp)
@@ -112,7 +107,6 @@ fun CustomFindTutorCard(
                 }
             }
 
-            // Request a Lesson Button
             Button(
                 onClick = {
                     val message = "Looking forward to the lesson!"
@@ -124,7 +118,6 @@ fun CustomFindTutorCard(
                 Text(text = "Request a Lesson")
             }
 
-            // Select New Lesson Button
             Button(
                 onClick = onSelectNewLessonClick,
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),

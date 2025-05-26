@@ -17,7 +17,6 @@ class LessonRequestRepository {
         FirebaseFirestore.getInstance()
     }
 
-    //Send a lesson request to a tutor
     suspend fun sendLessonRequest(
         studentId: String,
         tutorId: String,
@@ -43,7 +42,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Tutor gets pending lesson requests
     suspend fun getPendingRequestsForTutor(tutorId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -61,7 +59,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Tutor accepts lesson, update the status and assign student to tutor
     suspend fun updateLessonStatusAndAssignUsers(
         requestId: String,
         newStatus: String
@@ -85,7 +82,6 @@ class LessonRequestRepository {
         }.await()
     }
 
-    //Get the lesson date, student and tutor
     suspend fun getLessonByStudentTutorDate(
         studentId: String,
         tutorId: String,
@@ -108,7 +104,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Get lessons for student
     suspend fun getUpcomingLessonsForStudent(studentId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -125,7 +120,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Get lessons for tutor
     suspend fun getUpcomingLessonsForTutor(tutorId: String): List<LessonRequests> {
         return try {
             val snapshot = firestore.collection("lesson_requests")
@@ -142,7 +136,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Get student for tutor by id
     suspend fun getStudentProfileById(studentId: String): StudentProfile? {
         return try {
             val doc = firestore.collection("users")
@@ -194,7 +187,6 @@ class LessonRequestRepository {
         }
     }
 
-    //Cancel lesson
     suspend fun cancelLesson(lesson: LessonRequests) {
         firestore.collection("lesson_requests")
             .document(lesson.id)
@@ -202,7 +194,6 @@ class LessonRequestRepository {
             .await()
     }
 
-    //Reschedule lesson
     suspend fun rescheduleLesson(lesson: LessonRequests, newDateMillis: Long) {
         firestore.collection("lesson_requests")
             .document(lesson.id)
@@ -210,7 +201,6 @@ class LessonRequestRepository {
             .await()
     }
 
-    //Only request one date/lesson
     suspend fun hasLessonRequestOnDate(
         studentId: String,
         tutorId: String,
@@ -237,7 +227,6 @@ class LessonRequestRepository {
             requestDate == selectedDateStr
         }
     }
-    //Delete lesson req from db
     suspend fun deleteLessonRequest(requestId: String) {
         try {
             firestore.collection("lesson_requests")

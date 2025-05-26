@@ -105,7 +105,6 @@ fun NavigationGraph(navController: NavHostController) {
         composable(NavScreen.StudentEditProfile.route) {
             StudentEditProfile(
                 navController = navController,
-           //     repo = StudentProfileRepository(),
                 userRole = "Student"
             )
         }
@@ -124,7 +123,6 @@ fun NavigationGraph(navController: NavHostController) {
         composable(NavScreen.TutorEditProfile.route) {
             TutorEditProfile(
                 navController = navController,
-           //     repo = TutorProfileRepository(),
                 userRole = "Tutor"
             )
         }

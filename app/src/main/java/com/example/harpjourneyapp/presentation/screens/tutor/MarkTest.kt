@@ -145,31 +145,3 @@ fun MarkTest(
 }
 
 
-//@Composable
-//fun MarkTest(
-//    viewModel: MarkTestViewModel = viewModel(),
-//    navController: NavHostController
-//) {
-//    val submittedTests by viewModel.submittedTests.collectAsState()
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.fetchAllSubmittedTests()
-//    }
-//
-//    Column(modifier = Modifier.padding(16.dp)) {
-//        Text("Submitted Tests", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-//
-//        if (submittedTests.isEmpty()) {
-//            Text("No submissions found.")
-//        } else {
-//            submittedTests.forEach { test ->
-//                Text("Student: ${test.studentId}")
-//                test.answers.forEachIndexed { index, answer ->
-//                    Text("Q${index + 1}: $answer")
-//                }
-//                Spacer(modifier = Modifier.height(12.dp))
-//            }
-//        }
-//    }
-//}
-

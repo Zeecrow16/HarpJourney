@@ -42,12 +42,6 @@ class StudentHomePageViewModel(
         }
     }
 
-//    fun cancelLesson(lesson: LessonRequests) {
-//        viewModelScope.launch {
-//            lessonRequestRepository.cancelLesson(lesson)
-//            loadUpcomingLessons()
-//        }
-//    }
 
     private val _toastEvent = MutableSharedFlow<String>()
     val toastEvent: SharedFlow<String> = _toastEvent

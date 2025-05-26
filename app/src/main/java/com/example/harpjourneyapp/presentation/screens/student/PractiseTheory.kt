@@ -3,17 +3,21 @@ package com.example.harpjourneyapp.presentation.screens.practice
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.harpjourneyapp.AppViewModelProvider
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.screens.student.PractiseTheoryViewModel
@@ -22,8 +26,8 @@ import com.example.harpjourneyapp.ui.theme.BeigeBackground
 @Composable
 fun PractiseTheory(
     uid: String,
-    viewModel: PractiseTheoryViewModel = viewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: PractiseTheoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val questions by viewModel.filteredQuestions.collectAsState()
     val selectedAnswers = remember { mutableStateListOf<String>() }
@@ -40,29 +44,40 @@ fun PractiseTheory(
             .fillMaxSize()
             .background(BeigeBackground)
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .align(Alignment.TopCenter),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            Text(
-                text = pageTitle,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-            )
+            item {
+                Text(
+                    text = pageTitle,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp)
+                )
+            }
 
             if (questions.isEmpty()) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                item {
+                    Box(
+                        Modifier
+                            .fillParentMaxSize()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.testTag("loading_indicator")
+                        )
+                    }
                 }
             } else {
-                questions.forEachIndexed { index, question ->
+                itemsIndexed(questions) { index, question ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "${index + 1}. ${question.question}",
@@ -96,22 +111,24 @@ fun PractiseTheory(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = {
-                        if (selectedAnswers.isEmpty()) {
-                            Toast.makeText(context, "Please select answers before submitting.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            viewModel.submitTestToTutor(selectedAnswers)
-                            Toast.makeText(context, "Answers submitted.", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Text("Submit Answers")
+                    Button(
+                        onClick = {
+                            if (selectedAnswers.isEmpty()) {
+                                Toast.makeText(context, "Please select answers before submitting.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                viewModel.submitTestToTutor(selectedAnswers)
+                                Toast.makeText(context, "Answers submitted.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Text("Submit Answers")
+                    }
                 }
             }
         }

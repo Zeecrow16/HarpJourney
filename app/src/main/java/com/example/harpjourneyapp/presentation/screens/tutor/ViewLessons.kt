@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.harpjourneyapp.data.repository.LessonRequestRepository
+import com.example.harpjourneyapp.AppViewModelProvider
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.presentation.components.lesson.CustomAcceptLessonCard
@@ -35,10 +35,10 @@ import com.example.harpjourneyapp.ui.theme.PurpleDark
 @Composable
 fun ViewLessons(
     navController: NavHostController,
-    viewModelInstance: ViewLessonViewModel = viewModel { ViewLessonViewModel(LessonRequestRepository()) }
+    viewModel: ViewLessonViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val requests = viewModelInstance.requests
-    val isLoading = viewModelInstance.isLoading
+    val requests = viewModel.requests
+    val isLoading = viewModel.isLoading
     val pageTitle =  AppTitles.titles.ViewLessons
 
     Scaffold(
@@ -83,10 +83,10 @@ fun ViewLessons(
                         CustomAcceptLessonCard(
                             request = request,
                             onAccept = {
-                                viewModelInstance.updateRequestStatus(request.id, "Accepted")
+                                viewModel.updateRequestStatus(request.id, "Accepted")
                             },
                             onReject = {
-                                viewModelInstance.updateRequestStatus(request.id, "Rejected")
+                                viewModel.updateRequestStatus(request.id, "Rejected")
                             }
                         )
                     }

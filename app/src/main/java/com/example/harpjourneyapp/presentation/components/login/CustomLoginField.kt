@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +30,9 @@ fun LoginFields(
             onValueChange = onUsernameChange,
             isError = usernameHasError,
             label = { Text("Email", color = Color.DarkGray) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("usernameField"),
             singleLine = true
         )
 
@@ -38,11 +41,13 @@ fun LoginFields(
                 text = usernameError,
                 fontSize = 14.sp,
                 color = Color.Red,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .testTag("usernameError")
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         OutlinedTextField(
             value = password,
@@ -50,7 +55,9 @@ fun LoginFields(
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordHasError,
             label = { Text("Password", color = Color.DarkGray) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("passwordField"),
             singleLine = true
         )
 
@@ -59,7 +66,9 @@ fun LoginFields(
                 text = passwordError,
                 fontSize = 14.sp,
                 color = Color.Red,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .testTag("passwordError")
             )
         }
     }

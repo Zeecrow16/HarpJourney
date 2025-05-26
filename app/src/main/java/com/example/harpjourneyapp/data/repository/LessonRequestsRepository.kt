@@ -11,7 +11,11 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class LessonRequestRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
+class LessonRequestRepository {
+
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
 
     //Send a lesson request to a tutor
     suspend fun sendLessonRequest(
@@ -231,6 +235,19 @@ class LessonRequestRepository(private val firestore: FirebaseFirestore = Firebas
             Log.d("LessonCheck", "Existing request date: $requestDate vs Selected date: $selectedDateStr")
 
             requestDate == selectedDateStr
+        }
+    }
+    //Delete lesson req from db
+    suspend fun deleteLessonRequest(requestId: String) {
+        try {
+            firestore.collection("lesson_requests")
+                .document(requestId)
+                .delete()
+                .await()
+            Log.d("LessonRequestRepo", "Deleted lesson request with ID: $requestId")
+        } catch (e: Exception) {
+            Log.e("LessonRequestRepo", "Failed to delete lesson request: ${e.localizedMessage}")
+            throw e
         }
     }
 }

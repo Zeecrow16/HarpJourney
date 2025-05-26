@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import com.example.harpjourneyapp.R
 import com.example.harpjourneyapp.data.model.AuthViewModelFactory
 import com.example.harpjourneyapp.data.model.AuthenticationViewModel
+import com.example.harpjourneyapp.data.repository.StudentProfileRepository
+import com.example.harpjourneyapp.data.repository.TutorProfileRepository
 import com.example.harpjourneyapp.data.repository.UserRepository
 import com.example.harpjourneyapp.data.service.FirebaseUserService
 import com.example.harpjourneyapp.presentation.screens.LoginScreen
@@ -101,10 +103,9 @@ fun NavigationGraph(navController: NavHostController) {
         }
 
         composable(NavScreen.StudentEditProfile.route) {
-            val vm: StudentEditDetailsViewModel = viewModel()
             StudentEditProfile(
                 navController = navController,
-                viewModel = vm,
+           //     repo = StudentProfileRepository(),
                 userRole = "Student"
             )
         }
@@ -121,10 +122,9 @@ fun NavigationGraph(navController: NavHostController) {
             MarkTest(navController = navController)
         }
         composable(NavScreen.TutorEditProfile.route) {
-            val vm: TutorEditDetailsViewModel = viewModel()
             TutorEditProfile(
                 navController = navController,
-                viewModel = vm,
+           //     repo = TutorProfileRepository(),
                 userRole = "Tutor"
             )
         }

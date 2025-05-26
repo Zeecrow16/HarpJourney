@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.harpjourneyapp.AppViewModelProvider
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
@@ -42,9 +43,10 @@ import com.example.harpjourneyapp.ui.theme.BeigeBackground
 
 @Composable
 fun MarkTest(
-    viewModel: MarkTestViewModel = viewModel(),
-    navController: NavHostController
-) {
+    navController: NavHostController,
+    viewModel: MarkTestViewModel = viewModel(factory = AppViewModelProvider.Factory)
+)
+ {
     val submittedTests by viewModel.submittedTests.collectAsState()
     val pageTitle = AppTitles.titles.MarkTests
 

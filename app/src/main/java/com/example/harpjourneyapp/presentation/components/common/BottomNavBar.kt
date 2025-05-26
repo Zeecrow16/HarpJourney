@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -19,29 +20,13 @@ import com.example.harpjourneyapp.R
 import com.example.harpjourneyapp.enum.SkillLevel
 import com.example.harpjourneyapp.navigation.NavScreen
 
-//@Composable
-//private fun createListOfItems(skillLevel: SkillLevel): List<NavScreen> {
-//    return listOf(
-//        //Student
-//        NavScreen.StudentHomeScreen,
-//        NavScreen.StudentProfile,
-//        NavScreen.FindTutor,
-//        NavScreen.PractiseTheoryWithSkillLevel(skillLevel),
-//
-//        //Tutor
-//        NavScreen.TutorHomeScreen,
-//        NavScreen.TutorProfile,
-//        NavScreen.ViewLessons,
-//        NavScreen.MarkTest
-//    )
-//}
-
 
 @Composable
 fun BottomNavBar(
     navController: NavController,
     userRole: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentRoute: String? = null,
 ) {
     val items = when (userRole) {
         "Student" -> listOf(
@@ -64,8 +49,7 @@ fun BottomNavBar(
         containerColor = colorResource(id = R.color.purple_light),
         contentColor = Color.White
     ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+        val route = currentRoute ?: navController.currentBackStackEntryAsState().value?.destination?.route
 
         items.forEach { item ->
             NavigationBarItem(
@@ -75,15 +59,17 @@ fun BottomNavBar(
                         contentDescription = item.route,
                         modifier = Modifier
                             .size(24.dp)
+                            .testTag("BottomNavIcon_${item.route}")
                     )
                 },
                 label = {
                     Text(
                         text = item.route,
-                        fontSize = 11.sp
+                        fontSize = 11.sp,
+                        modifier = Modifier.testTag("BottomNavLabel_${item.route}") // Tag label too for testing
                     )
                 },
-                selected = currentRoute == item.route,
+                selected = route == item.route,
                 onClick = {
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.startDestinationRoute!!) {
@@ -98,5 +84,3 @@ fun BottomNavBar(
         }
     }
 }
-
-

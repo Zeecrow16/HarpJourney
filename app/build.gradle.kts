@@ -20,9 +20,13 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    testOptions {
+        animationsDisabled = true
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -39,9 +43,17 @@ android {
     buildFeatures {
         compose = true
     }
+
+
 }
 
 dependencies {
+    constraints {
+    implementation("com.fasterxml.jackson:jackson-bom:2.16.1")
+    implementation("org.apache.commons:commons-lang3:3.14.0")
+    implementation("org.apache.commons:commons-text:1.11.0")
+}
+
     implementation (libs.material.v1100)
     implementation(libs.firebase.analytics)
     implementation(platform(libs.firebase.bom))
@@ -65,6 +77,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.places)
+    implementation(libs.androidx.navigation.testing.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,4 +85,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Testing
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation (libs.androidx.ui.test.junit4.vcomposeversion)
+    androidTestImplementation (libs.androidx.junit)
+    androidTestImplementation (libs.androidx.espresso.core)
+
+    testImplementation( libs.mockito.core)
+    testImplementation (libs.mockito.kotlin)
+    androidTestImplementation (libs.mockito.android)
+
+
 }

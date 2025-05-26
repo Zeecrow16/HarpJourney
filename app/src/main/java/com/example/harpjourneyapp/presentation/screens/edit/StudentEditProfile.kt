@@ -14,18 +14,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
-import com.example.harpjourneyapp.presentation.screens.Interfaces.EditDetailsInterface
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import com.example.harpjourneyapp.ui.theme.PurpleLight
 import com.example.harpjourneyapp.ui.theme.PurplePrimary
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.harpjourneyapp.AppViewModelProvider
 
 @Composable
 fun StudentEditProfile(
     navController: NavHostController,
-    viewModel: EditDetailsInterface,
     userRole: String
 ) {
+    val viewModel: StudentEditDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
     val pageTitle = AppTitles.titles.EditProfile
     val context = LocalContext.current
@@ -33,10 +34,8 @@ fun StudentEditProfile(
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = BeigeBackground
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+    ){
+        Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
                     .weight(1f)

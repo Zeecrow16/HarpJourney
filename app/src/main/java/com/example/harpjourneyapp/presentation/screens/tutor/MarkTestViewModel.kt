@@ -18,7 +18,7 @@ class MarkTestViewModel(
 
     fun fetchAllSubmittedTests() {
         viewModelScope.launch {
-            Log.d("MarkTestViewModel", "Fetching all submitted tests...")
+            Log.d("MarkTestViewModel", "Fetching all submitted tests")
             try {
                 val tests = questionsRepository.getAllSubmittedTests()
                 _submittedTests.value = tests

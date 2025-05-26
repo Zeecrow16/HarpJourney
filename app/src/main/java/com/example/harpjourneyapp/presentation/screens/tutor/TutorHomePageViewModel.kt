@@ -63,10 +63,19 @@ class TutorHomePageViewModel(
             _myStudents.value = students
         }
     }
+
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent: SharedFlow<String> = _toastEvent
+
     fun cancelLesson(lesson: LessonRequests) {
         viewModelScope.launch {
-            lessonRequestRepository.cancelLesson(lesson)
-            loadUpcomingRequests()
+            try {
+                lessonRequestRepository.deleteLessonRequest(lesson.id)
+                loadUpcomingRequests()
+                _toastEvent.emit("Lesson removed.")
+            } catch (e: Exception) {
+                Log.e("TutorHomePageVM", "Failed to delete lesson: ${e.localizedMessage}")
+            }
         }
     }
 

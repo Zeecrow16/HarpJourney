@@ -2,16 +2,19 @@ package com.example.harpjourneyapp.presentation.screens.tutor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.harpjourneyapp.AppViewModelProvider
 import com.example.harpjourneyapp.R
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.navigation.NavScreen
@@ -33,8 +37,8 @@ import com.example.harpjourneyapp.ui.theme.PurplePrimary
 @Composable
 fun TutorHomeScreen(
     navController: NavHostController,
-    viewModel: TutorHomePageViewModel = viewModel()
-) {
+    viewModel: TutorHomePageViewModel = viewModel(factory = AppViewModelProvider.Factory)
+)  {
     val userRole = "Tutor"
     val upcomingRequests by viewModel.upcomingRequests.collectAsState()
     val pageTitle = AppTitles.titles.TutorHome
@@ -50,67 +54,90 @@ fun TutorHomeScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BeigeBackground)
-    ) {
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(
+                navController = navController,
+                userRole = userRole
+            )
+        },
+        containerColor = BeigeBackground
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .padding(bottom = 56.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Text(
-                text = pageTitle,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-            )
-            ViewUpcomingLessons(lessons = upcomingRequests,
-                                onCancelLesson = { lesson -> viewModel.cancelLesson(lesson) },
-                                onRescheduleLesson = { lesson, newDateMillis -> viewModel.rescheduleLesson(lesson, newDateMillis) })
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            ViewStudents(students = students)
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Button(
-                onClick = { navController.navigate("Tutor Edit Profile") },
-                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
-                shape = RoundedCornerShape(8.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                Text("Update Details", color = Color.White, fontWeight = FontWeight.Bold)
-            }
+                item {
+                    Text(
+                        text = pageTitle,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp)
+                            .testTag("PageTitle")
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                item {
+                    ViewUpcomingLessons(
+                        lessons = upcomingRequests,
+                        onCancelLesson = { lesson -> viewModel.cancelLesson(lesson) },
+                        onRescheduleLesson = { lesson, newDateMillis ->
+                            viewModel.rescheduleLesson(lesson, newDateMillis)
+                        }
+                    )
+                }
 
-            IconButton(
-                onClick = { viewModel.logout() },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.logoutbutton),
-                    contentDescription = "Logout"
-                )
+                item {
+                    ViewStudents(students = students)
+                }
+
+                item {
+                    Button(
+                        onClick = { navController.navigate("Tutor Edit Profile") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                        contentPadding = PaddingValues(vertical = 6.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text(
+                            text = "Update Details",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = { viewModel.logout() }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.logoutbutton),
+                                contentDescription = "Logout"
+                            )
+                        }
+                    }
+                }
             }
         }
-
-        BottomNavBar(
-            navController = navController,
-            userRole = userRole,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-        )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

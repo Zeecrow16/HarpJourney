@@ -6,9 +6,10 @@ import com.example.harpjourneyapp.data.SubmittedTest
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class QuestionsRepository(
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-) {
+class QuestionsRepository {
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
     suspend fun getAllQuestions(): List<HarpQuestions> {
         val querySnapshot = firestore.collection("harp_questions")
             .get()

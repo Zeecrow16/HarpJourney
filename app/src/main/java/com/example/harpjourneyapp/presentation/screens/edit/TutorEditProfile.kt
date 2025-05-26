@@ -21,14 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.harpjourneyapp.AppViewModelProvider
 import com.example.harpjourneyapp.data.titles.AppTitles
 import com.example.harpjourneyapp.presentation.components.common.BottomNavBar
-import com.example.harpjourneyapp.presentation.screens.Interfaces.EditDetailsInterface
 import com.example.harpjourneyapp.ui.theme.BeigeBackground
 import com.example.harpjourneyapp.ui.theme.PurpleLight
 import com.example.harpjourneyapp.ui.theme.PurplePrimary
@@ -36,9 +35,9 @@ import com.example.harpjourneyapp.ui.theme.PurplePrimary
 @Composable
 fun TutorEditProfile(
     navController: NavHostController,
-    viewModel: EditDetailsInterface,
     userRole: String
 ) {
+    val viewModel: TutorEditDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val uiState by viewModel.uiState.collectAsState()
     val pageTitle = AppTitles.titles.EditProfile
     val context = LocalContext.current

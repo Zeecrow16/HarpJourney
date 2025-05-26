@@ -1,6 +1,7 @@
 package com.example.harpjourneyapp.presentation.screens.student
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.harpjourneyapp.data.LessonRequests
@@ -41,12 +42,27 @@ class StudentHomePageViewModel(
         }
     }
 
+//    fun cancelLesson(lesson: LessonRequests) {
+//        viewModelScope.launch {
+//            lessonRequestRepository.cancelLesson(lesson)
+//            loadUpcomingLessons()
+//        }
+//    }
+
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent: SharedFlow<String> = _toastEvent
+
     fun cancelLesson(lesson: LessonRequests) {
-        viewModelScope.launch {
-            lessonRequestRepository.cancelLesson(lesson)
-            loadUpcomingLessons()
+            viewModelScope.launch {
+                try {
+                    lessonRequestRepository.deleteLessonRequest(lesson.id)
+                    loadUpcomingLessons()
+                    _toastEvent.emit("Lesson removed.")
+                } catch (e: Exception) {
+                    Log.e("TutorHomePageVM", "Failed to delete lesson: ${e.localizedMessage}")
+                }
+            }
         }
-    }
 
     fun rescheduleLesson(lesson: LessonRequests, newDateMillis: Long) {
         viewModelScope.launch {

@@ -8,8 +8,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class StudentProfileRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
+class StudentProfileRepository {
 
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
     suspend fun saveUserProfile(uuid: String, profile: StudentProfile) {
         firestore.collection("users")
             .document(uuid)
